@@ -1,0 +1,512 @@
+
+SQL> insert into t1 values (1);
+
+1 row created.
+
+SQL> commit;
+
+Commit complete.
+
+SQL> 
+SQL> 
+SQL> select tname from tab;
+
+TNAME
+------------------------------
+T1
+
+SQL> select * from t1;
+
+	ID
+----------
+	 1
+
+SQL> conn test2/test2
+Connected.
+SQL> 
+SQL> 
+SQL> select tname from tab;
+
+no rows selected
+
+SQL> 
+SQL> 
+SQL> exit
+Disconnected from Oracle Database 11g Enterprise Edition Release 11.2.0.3.0 - 64bit Production
+With the Partitioning, OLAP, Data Mining and Real Application Testing options
+[oracle@dbserver ~]$ 
+[oracle@dbserver ~]$ 
+[oracle@dbserver ~]$ sqlplus
+
+SQL*Plus: Release 11.2.0.3.0 Production on Fri Sep 22 12:47:43 2017
+
+Copyright (c) 1982, 2011, Oracle.  All rights reserved.
+
+Enter user-name: test2
+Enter password: 
+
+Connected to:
+Oracle Database 11g Enterprise Edition Release 11.2.0.3.0 - 64bit Production
+With the Partitioning, OLAP, Data Mining and Real Application Testing options
+
+SQL> 
+SQL> 
+SQL> select tname from tab;
+
+TNAME
+------------------------------
+T2
+
+SQL> 
+SQL> 
+SQL> 
+SQL> select * from t2;
+
+	ID
+----------
+	 1
+
+SQL> exit
+Disconnected from Oracle Database 11g Enterprise Edition Release 11.2.0.3.0 - 64bit Production
+With the Partitioning, OLAP, Data Mining and Real Application Testing options
+[oracle@dbserver ~]$ 
+[oracle@dbserver ~]$ 
+[oracle@dbserver ~]$ sqlplus / as sysdba;
+
+SQL*Plus: Release 11.2.0.3.0 Production on Fri Sep 22 12:49:28 2017
+
+Copyright (c) 1982, 2011, Oracle.  All rights reserved.
+
+
+Connected to:
+Oracle Database 11g Enterprise Edition Release 11.2.0.3.0 - 64bit Production
+With the Partitioning, OLAP, Data Mining and Real Application Testing options
+
+SQL> 
+SQL> 
+SQL> drop user test1;
+drop user test1
+*
+ERROR at line 1:
+ORA-01922: CASCADE must be specified to drop 'TEST1'
+
+
+SQL> drop user test1 cascade;
+
+User dropped.
+
+SQL> 
+SQL> 
+SQL> exit
+Disconnected from Oracle Database 11g Enterprise Edition Release 11.2.0.3.0 - 64bit Production
+With the Partitioning, OLAP, Data Mining and Real Application Testing options
+[oracle@dbserver ~]$ 
+[oracle@dbserver ~]$ 
+[oracle@dbserver ~]$ sqlplus test1/test1 
+
+SQL*Plus: Release 11.2.0.3.0 Production on Fri Sep 22 12:51:06 2017
+
+Copyright (c) 1982, 2011, Oracle.  All rights reserved.
+
+
+Connected to:
+Oracle Database 11g Enterprise Edition Release 11.2.0.3.0 - 64bit Production
+With the Partitioning, OLAP, Data Mining and Real Application Testing options
+
+SQL> 
+SQL> 
+SQL> select tname from tab;
+
+TNAME
+------------------------------
+T1
+
+SQL> 
+SQL> 
+SQL> select * from t1;
+
+	ID
+----------
+	 1
+
+SQL> 
+SQL> 
+SQL> insert into test1 values (2); commit;
+insert into test1 values (2); commit
+                            *
+ERROR at line 1:
+ORA-00911: invalid character
+
+
+SQL> insert into test1 values (2); 
+insert into test1 values (2)
+            *
+ERROR at line 1:
+ORA-00942: table or view does not exist
+
+
+SQL> exit
+Disconnected from Oracle Database 11g Enterprise Edition Release 11.2.0.3.0 - 64bit Production
+With the Partitioning, OLAP, Data Mining and Real Application Testing options
+[oracle@dbserver ~]$ 
+[oracle@dbserver ~]$ 
+[oracle@dbserver ~]$ sqlplus
+
+SQL*Plus: Release 11.2.0.3.0 Production on Fri Sep 22 12:54:36 2017
+
+Copyright (c) 1982, 2011, Oracle.  All rights reserved.
+
+Enter user-name: test1
+Enter password: 
+
+Connected to:
+Oracle Database 11g Enterprise Edition Release 11.2.0.3.0 - 64bit Production
+With the Partitioning, OLAP, Data Mining and Real Application Testing options
+
+SQL> 
+SQL> 
+SQL> 
+SQL> select tname from tab;
+
+TNAME
+------------------------------
+T1
+
+SQL> 
+SQL> 
+SQL> insert into t1 values (2);
+
+1 row created.
+
+SQL> commit;
+
+Commit complete.
+
+SQL> 
+SQL> 
+SQL> 
+SQL> select * from t1;
+
+	ID
+----------
+	 1
+	 2
+
+SQL> exit
+Disconnected from Oracle Database 11g Enterprise Edition Release 11.2.0.3.0 - 64bit Production
+With the Partitioning, OLAP, Data Mining and Real Application Testing options
+[oracle@dbserver ~]$ 
+[oracle@dbserver ~]$ 
+[oracle@dbserver ~]$ sqlplus / as sysdba
+
+SQL*Plus: Release 11.2.0.3.0 Production on Fri Sep 22 12:59:32 2017
+
+Copyright (c) 1982, 2011, Oracle.  All rights reserved.
+
+
+Connected to:
+Oracle Database 11g Enterprise Edition Release 11.2.0.3.0 - 64bit Production
+With the Partitioning, OLAP, Data Mining and Real Application Testing options
+
+SQL> 
+SQL> 
+SQL> create user test3 identified by test3;
+
+User created.
+
+SQL> grant dba to test3;
+
+Grant succeeded.
+
+SQL> 
+SQL> 
+SQL> conn test3/test3
+Connected.
+SQL> 
+SQL> 
+SQL> select tname from tab;
+
+TNAME
+------------------------------
+T1
+
+SQL> 
+SQL> select * from t1;
+
+no rows selected
+
+SQL> 
+SQL> 
+SQL> select * from t1;
+
+	ID
+----------
+	 1
+	 2
+
+SQL>  
+SQL> 
+SQL> exit
+Disconnected from Oracle Database 11g Enterprise Edition Release 11.2.0.3.0 - 64bit Production
+With the Partitioning, OLAP, Data Mining and Real Application Testing options
+[oracle@dbserver ~]$ 
+[oracle@dbserver ~]$ 
+[oracle@dbserver ~]$ 
+[oracle@dbserver ~]$ sqlplus / as sysdba
+
+SQL*Plus: Release 11.2.0.3.0 Production on Fri Sep 22 13:58:03 2017
+
+Copyright (c) 1982, 2011, Oracle.  All rights reserved.
+
+
+Connected to:
+Oracle Database 11g Enterprise Edition Release 11.2.0.3.0 - 64bit Production
+With the Partitioning, OLAP, Data Mining and Real Application Testing options
+
+SQL> 
+SQL> 
+SQL> desc dba_tablespaces
+ Name					   Null?    Type
+ ----------------------------------------- -------- ----------------------------
+ TABLESPACE_NAME			   NOT NULL VARCHAR2(30)
+ BLOCK_SIZE				   NOT NULL NUMBER
+ INITIAL_EXTENT 				    NUMBER
+ NEXT_EXTENT					    NUMBER
+ MIN_EXTENTS				   NOT NULL NUMBER
+ MAX_EXTENTS					    NUMBER
+ MAX_SIZE					    NUMBER
+ PCT_INCREASE					    NUMBER
+ MIN_EXTLEN					    NUMBER
+ STATUS 					    VARCHAR2(9)
+ CONTENTS					    VARCHAR2(9)
+ LOGGING					    VARCHAR2(9)
+ FORCE_LOGGING					    VARCHAR2(3)
+ EXTENT_MANAGEMENT				    VARCHAR2(10)
+ ALLOCATION_TYPE				    VARCHAR2(9)
+ PLUGGED_IN					    VARCHAR2(3)
+ SEGMENT_SPACE_MANAGEMENT			    VARCHAR2(6)
+ DEF_TAB_COMPRESSION				    VARCHAR2(8)
+ RETENTION					    VARCHAR2(11)
+ BIGFILE					    VARCHAR2(3)
+ PREDICATE_EVALUATION				    VARCHAR2(7)
+ ENCRYPTED					    VARCHAR2(3)
+ COMPRESS_FOR					    VARCHAR2(12)
+
+SQL> select * from dba_tablespaces;
+
+TABLESPACE_NAME 	       BLOCK_SIZE INITIAL_EXTENT NEXT_EXTENT MIN_EXTENTS
+------------------------------ ---------- -------------- ----------- -----------
+MAX_EXTENTS   MAX_SIZE PCT_INCREASE MIN_EXTLEN STATUS	 CONTENTS  LOGGING   FOR
+----------- ---------- ------------ ---------- --------- --------- --------- ---
+EXTENT_MAN ALLOCATIO PLU SEGMEN DEF_TAB_ RETENTION   BIG PREDICA ENC
+---------- --------- --- ------ -------- ----------- --- ------- ---
+COMPRESS_FOR
+------------
+SYSTEM				     8192	   65536		       1
+ 2147483645 2147483645			 65536 ONLINE	 PERMANENT LOGGING   NO
+LOCAL	   SYSTEM    NO  MANUAL DISABLED NOT APPLY   NO  HOST	 NO
+
+
+
+TABLESPACE_NAME 	       BLOCK_SIZE INITIAL_EXTENT NEXT_EXTENT MIN_EXTENTS
+------------------------------ ---------- -------------- ----------- -----------
+MAX_EXTENTS   MAX_SIZE PCT_INCREASE MIN_EXTLEN STATUS	 CONTENTS  LOGGING   FOR
+----------- ---------- ------------ ---------- --------- --------- --------- ---
+EXTENT_MAN ALLOCATIO PLU SEGMEN DEF_TAB_ RETENTION   BIG PREDICA ENC
+---------- --------- --- ------ -------- ----------- --- ------- ---
+COMPRESS_FOR
+------------
+SYSAUX				     8192	   65536		       1
+ 2147483645 2147483645			 65536 ONLINE	 PERMANENT LOGGING   NO
+LOCAL	   SYSTEM    NO  AUTO	DISABLED NOT APPLY   NO  HOST	 NO
+
+
+
+TABLESPACE_NAME 	       BLOCK_SIZE INITIAL_EXTENT NEXT_EXTENT MIN_EXTENTS
+------------------------------ ---------- -------------- ----------- -----------
+MAX_EXTENTS   MAX_SIZE PCT_INCREASE MIN_EXTLEN STATUS	 CONTENTS  LOGGING   FOR
+----------- ---------- ------------ ---------- --------- --------- --------- ---
+EXTENT_MAN ALLOCATIO PLU SEGMEN DEF_TAB_ RETENTION   BIG PREDICA ENC
+---------- --------- --- ------ -------- ----------- --- ------- ---
+COMPRESS_FOR
+------------
+UNDOTBS1			     8192	   65536		       1
+ 2147483645 2147483645			 65536 ONLINE	 UNDO	   LOGGING   NO
+LOCAL	   SYSTEM    NO  MANUAL DISABLED NOGUARANTEE NO  HOST	 NO
+
+
+
+TABLESPACE_NAME 	       BLOCK_SIZE INITIAL_EXTENT NEXT_EXTENT MIN_EXTENTS
+------------------------------ ---------- -------------- ----------- -----------
+MAX_EXTENTS   MAX_SIZE PCT_INCREASE MIN_EXTLEN STATUS	 CONTENTS  LOGGING   FOR
+----------- ---------- ------------ ---------- --------- --------- --------- ---
+EXTENT_MAN ALLOCATIO PLU SEGMEN DEF_TAB_ RETENTION   BIG PREDICA ENC
+---------- --------- --- ------ -------- ----------- --- ------- ---
+COMPRESS_FOR
+------------
+TEMP				     8192	 1048576     1048576	       1
+	    2147483645		  0    1048576 ONLINE	 TEMPORARY NOLOGGING NO
+LOCAL	   UNIFORM   NO  MANUAL DISABLED NOT APPLY   NO  HOST	 NO
+
+
+
+TABLESPACE_NAME 	       BLOCK_SIZE INITIAL_EXTENT NEXT_EXTENT MIN_EXTENTS
+------------------------------ ---------- -------------- ----------- -----------
+MAX_EXTENTS   MAX_SIZE PCT_INCREASE MIN_EXTLEN STATUS	 CONTENTS  LOGGING   FOR
+----------- ---------- ------------ ---------- --------- --------- --------- ---
+EXTENT_MAN ALLOCATIO PLU SEGMEN DEF_TAB_ RETENTION   BIG PREDICA ENC
+---------- --------- --- ------ -------- ----------- --- ------- ---
+COMPRESS_FOR
+------------
+USERS				     8192	   65536		       1
+ 2147483645 2147483645			 65536 ONLINE	 PERMANENT LOGGING   NO
+LOCAL	   SYSTEM    NO  AUTO	DISABLED NOT APPLY   NO  HOST	 NO
+
+
+
+SQL> create tablespace 
+   dbabd_ts
+datafile   
+  '/u01/app/oracle/oradata/orcldb/dbabd_ts01.dbf
+size 50m
+blocksize 32k
+maxsize 100m
+uniform size 10M
+autoextend on;  2    3    4    5    6    7    8    9  ;
+  '/u01/app/oracle/oradata/orcldb/dbabd_ts01.dbf
+  *
+ERROR at line 4:
+ORA-01756: quoted string not properly terminated
+
+
+SQL> create tablespace 
+   dbabd_ts
+datafile   
+  '/u01/app/oracle/oradata/orcldb/dbabd_ts01.dbf
+size 50m
+blocksize 32k
+maxsize 100m
+uniform size 10M
+autoextend on;  2    3    4    5    6    7    8    9  
+  '/u01/app/oracle/oradata/orcldb/dbabd_ts01.dbf
+  *
+ERROR at line 4:
+ORA-01756: quoted string not properly terminated
+
+
+SQL> create tablespace 
+   dbabd_ts
+datafile   
+  '/u01/app/oracle/oradata/orcldb/dbabd_ts01.dbf'
+size 50m
+blocksize 32k
+maxsize 100m
+uniform size 10M
+autoextend on;  2    3    4    5    6    7    8    9  
+maxsize 100m
+*
+ERROR at line 7:
+ORA-02180: invalid option for CREATE TABLESPACE
+
+
+SQL> create tablespace 
+   dbabd_ts
+datafile   
+  '/u01/app/oracle/oradata/orcldb/dbabd_ts01.dbf'
+size 50m
+blocksize 32k
+maxsize 100m
+uniform size 10M
+autoextend on;  2    3    4    5    6                         
+SQL> 
+SQL> create tablespace 
+   dbabd_ts
+datafile   
+  '/u01/app/oracle/oradata/orcldb/dbabd_ts01.dbf'
+size 50m
+blocksize 32k
+maxsize 100m
+uniform size 10M
+autoextend on;  2    3    4    5    6    7    8    9  
+maxsize 100m
+*
+ERROR at line 7:
+ORA-02180: invalid option for CREATE TABLESPACE
+
+
+SQL> 
+SQL> 
+SQL> 
+SQL> 
+SQL> show user
+USER is "SYS"
+SQL> create tablespace dbabd_ts datafile '/u01/app/oracle/oradata/orcldb/dbabd_ts01.dbf' size 50m maxsize 100m autoextend on;
+create tablespace dbabd_ts datafile '/u01/app/oracle/oradata/orcldb/dbabd_ts01.dbf' size 50m maxsize 100m autoextend on
+                                                                                             *
+ERROR at line 1:
+ORA-02180: invalid option for CREATE TABLESPACE
+
+
+SQL> create tablespace dbabd_ts datafile '/u01/app/oracle/oradata/orcldb/dbabd_ts01.dbf' size 50m autoextend on;
+
+Tablespace created.
+
+SQL> create tablespace dbabd_ts1 datafile '/u01/app/oracle/oradata/orcldb/dbabd_ts02.dbf' size 50m autoextend on;
+
+Tablespace created.
+
+SQL> create user dbabd identified by dbabd default tablespace dbabd_ts;
+
+User created.
+
+SQL> grant dba to dbabd
+  2  ;
+
+Grant succeeded.
+
+SQL> create user dbabd1 identified by dbabd1 default tablespace dbabd_ts1;
+
+User created.
+
+SQL> conn dbabd/dbabd
+Connected.
+SQL> create table dba_t1(id number);
+
+Table created.
+
+SQL> insert into dba_t1 values(1);
+
+1 row created.
+
+SQL> commit;
+
+Commit complete.
+
+SQL> 
+SQL> 
+SQL> 
+SQL> show user
+USER is "DBABD"
+SQL> 
+SQL> 
+SQL> conn dbabd1/dbabd1
+Connected.
+SQL> 
+SQL> 
+SQL> select tname from tab;
+
+TNAME
+------------------------------
+DBA_T2
+
+SQL> select * from dba_t2;
+
+	ID
+----------
+	 1
+
+SQL> exit
+Disconnected from Oracle Database 11g Enterprise Edition Release 11.2.0.3.0 - 64bit Production
+With the Partitioning, OLAP, Data Mining and Real Application Testing options
+[oracle@dbserver ~]$ ^C
+[oracle@dbserver ~]$ 

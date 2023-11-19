@@ -1,0 +1,354 @@
+SQL> select tablespace_name from dba_tablespaces;
+
+TABLESPACE_NAME
+------------------------------
+SYSTEM
+SYSAUX
+UNDOTBS1
+TEMPTS
+USERS
+
+SQL> select file_name from dba_data_files;
+
+FILE_NAME
+--------------------------------------------------------------------------------
+/u01/app/oracle/oradata/manual/system01.dbf
+/u01/app/oracle/oradata/manual/system02.dbf
+/u01/app/oracle/oradata/manual/sysaux01.dbf
+/u01/app/oracle/oradata/manual/undots01.dbf
+/u01/app/oracle/oradata/manual/users01.dbf
+
+SQL> create tablespace max_ts datafile '/u01/app/oracle/oradata/manual/max_ts01.dbf' size 2g autoextend on next 2g maxsize 32g;
+create tablespace max_ts datafile '/u01/app/oracle/oradata/manual/max_ts01.dbf' size 2g autoextend on next 2g maxsize 32g
+*
+ERROR at line 1:
+ORA-03206: maximum file size of (4194304) blocks in AUTOEXTEND clause is out of
+range
+
+
+SQL> create tablespace max_ts datafile '/u01/app/oracle/oradata/manual/max_ts01.dbf' size 2g autoextend on next 2g maxsize 30g;
+
+Tablespace created.
+
+SQL> set line 250
+SQL> col file_name format a67
+SQL> col tablespace_name format a20
+SQL> select file_name,tablespace_name,bytes/1024/1024/1024,maxbytes/1024/1024/1024 from dba_data_files order by tablespace_name;
+FILE_NAME							    TABLESPACE_NAME	 BYTES/1024/1024/1024 MAXBYTES/1024/1024/1024
+------------------------------------------------------------------- -------------------- -------------------- -----------------------
+/u01/app/oracle/oradata/manual/max_ts01.dbf			    MAX_TS				    2			   30
+/u01/app/oracle/oradata/manual/sysaux01.dbf			    SYSAUX			    .09765625			    0
+/u01/app/oracle/oradata/manual/system01.dbf			    SYSTEM			    .09765625			    0
+/u01/app/oracle/oradata/manual/system02.dbf			    SYSTEM				    2			   30
+/u01/app/oracle/oradata/manual/undots01.dbf			    UNDOTBS1			   .228515625		   31.9999847
+/u01/app/oracle/oradata/manual/users01.dbf			    USERS			   .048828125		   31.9999847
+
+6 rows selected.
+
+SQL> create user max identified by max default tablespace max_ts;
+
+User created.
+
+SQL> 
+SQL> grant connect,resource,dba to max;
+
+Grant succeeded.
+
+SQL> 
+SQL> desc dba_users;
+ Name																		 Null?	  Type
+ ----------------------------------------------------------------------------------------------------------------------------------------------- -------- ------------------------------------------------------------------------------------------------
+ USERNAME																	 NOT NULL VARCHAR2(30)
+ USER_ID																	 NOT NULL NUMBER
+ PASSWORD																		  VARCHAR2(30)
+ ACCOUNT_STATUS 																 NOT NULL VARCHAR2(32)
+ LOCK_DATE																		  DATE
+ EXPIRY_DATE																		  DATE
+ DEFAULT_TABLESPACE																 NOT NULL VARCHAR2(30)
+ TEMPORARY_TABLESPACE																 NOT NULL VARCHAR2(30)
+ CREATED																	 NOT NULL DATE
+ PROFILE																	 NOT NULL VARCHAR2(30)
+ INITIAL_RSRC_CONSUMER_GROUP																  VARCHAR2(30)
+ EXTERNAL_NAME																		  VARCHAR2(4000)
+ PASSWORD_VERSIONS																	  VARCHAR2(8)
+ EDITIONS_ENABLED																	  VARCHAR2(1)
+ AUTHENTICATION_TYPE																	  VARCHAR2(8)
+
+SQL> desc dba_users;
+ Name																		 Null?	  Type
+ ----------------------------------------------------------------------------------------------------------------------------------------------- -------- ------------------------------------------------------------------------------------------------
+ USERNAME																	 NOT NULL VARCHAR2(30)
+ USER_ID																	 NOT NULL NUMBER
+ PASSWORD																		  VARCHAR2(30)
+ ACCOUNT_STATUS 																 NOT NULL VARCHAR2(32)
+ LOCK_DATE																		  DATE
+ EXPIRY_DATE																		  DATE
+ DEFAULT_TABLESPACE																 NOT NULL VARCHAR2(30)
+ TEMPORARY_TABLESPACE																 NOT NULL VARCHAR2(30)
+ CREATED																	 NOT NULL DATE
+ PROFILE																	 NOT NULL VARCHAR2(30)
+ INITIAL_RSRC_CONSUMER_GROUP																  VARCHAR2(30)
+ EXTERNAL_NAME																		  VARCHAR2(4000)
+ PASSWORD_VERSIONS																	  VARCHAR2(8)
+ EDITIONS_ENABLED																	  VARCHAR2(1)
+ AUTHENTICATION_TYPE																	  VARCHAR2(8)
+
+SQL> select username,DEFAULT_TABLESPACE,TEMPORARY_TABLESPACE,CREATED from dba_users order by username;
+
+USERNAME		       DEFAULT_TABLESPACE	      TEMPORARY_TABLESPACE	     CREATED
+------------------------------ ------------------------------ ------------------------------ ---------
+APPQOSSYS		       SYSAUX			      TEMPTS			     18-AUG-17
+DBSNMP			       SYSAUX			      TEMPTS			     18-AUG-17
+DIP			                   USERS			          TEMPTS			     18-AUG-17
+MAX			               MAX_TS			      TEMPTS			     15-SEP-17
+ORACLE_OCM		   USERS			          TEMPTS			     18-AUG-17
+OUTLN			           SYSTEM			      TEMPTS			     18-AUG-17
+SYS			                   SYSTEM			      TEMPTS			     18-AUG-17
+SYSTEM			           SYSTEM			      TEMPTS			     18-AUG-17
+
+8 rows selected.
+
+
+SQL> select owner, table_name, tablespace_name from dba_tables where table_name='TEST';
+
+OWNER			       TABLE_NAME		      TABLESPACE_NAME
+------------------------------ ------------------------------ --------------------
+MAX			       TEST			      MAX_TS
+
+SQL> 
+SQL> begin
+  2  for i in 1..1000000 loop
+  3  insert into test 
+  4  values(i,'DBABD');
+  5  end loop;
+  6  commit;
+  7  end;
+  8  /
+
+PL/SQL procedure successfully completed.
+
+SQL> select count(*) from test;
+
+  COUNT(*)
+----------
+   1000000
+
+SQL> 
+
+
+SQL> alter tablespace max_ts add datafile '/u01/app/oracle/oradata/manual/max_ts02.dbf' size 2g autoextend on next 2g maxsize 30g;
+
+Tablespace altered.
+
+SQL> 
+SQL> 
+SQL> col file_name format a67
+SQL> select tablespace_name,file_name from dba_data_files where tablespace_name='MAX_TS';
+
+TABLESPACE_NAME 	       FILE_NAME
+------------------------------ -------------------------------------------------------------------
+MAX_TS			       /u01/app/oracle/oradata/manual/max_ts01.dbf
+MAX_TS			       /u01/app/oracle/oradata/manual/max_ts02.dbf
+
+SQL> 
+
+
+SQL> 
+alter tablespace MAX_TS offline;
+
+Tablespace altered.
+
+SQL> select TABLESPACE_NAME,status from dba_tablespaces;
+
+TABLESPACE_NAME 	       STATUS
+------------------------------ ---------
+SYSTEM			       ONLINE
+SYSAUX			       ONLINE
+UNDOTBS1		       ONLINE
+TEMPTS			       ONLINE
+USERS			       ONLINE
+MAX_TS			       OFFLINE
+
+6 rows selected.
+
+
+
+[oracle@dbserver1 Desktop]$ mv /u01/app/oracle/oradata/manual/max_ts01.dbf /u02/app/oracle/oradata/manual/max_ts01.dbf
+[oracle@dbserver1 Desktop]$ mv /u01/app/oracle/oradata/manual/max_ts02.dbf /u02/app/oracle/oradata/manual/max_ts02.dbf
+[oracle@dbserver1 Desktop]$ sqlplus / as sysdba
+
+SQL*Plus: Release 11.2.0.3.0 Production on Fri Sep 15 13:09:49 2017
+
+Copyright (c) 1982, 2011, Oracle.  All rights reserved.
+
+
+Connected to:
+Oracle Database 11g Enterprise Edition Release 11.2.0.3.0 - 64bit Production
+With the Partitioning, OLAP, Data Mining and Real Application Testing options
+
+SQL> alter tablespace MAX_TS rename datafile '/u01/app/oracle/oradata/manual/max_ts01.dbf' to '/u02/app/oracle/oradata/manual/max_ts01.dbf';
+
+Tablespace altered.
+
+SQL> alter tablespace MAX_TS rename datafile '/u01/app/oracle/oradata/manual/max_ts02.dbf' to '/u02/app/oracle/oradata/manual/max_ts02.dbf';
+
+Tablespace altered.
+
+SQL> alter tablespace MAX_TS online;
+
+Tablespace altered.
+
+SQL> select TABLESPACE_NAME,status from dba_tablespaces;
+
+TABLESPACE_NAME 	       STATUS
+------------------------------ ---------
+SYSTEM			       ONLINE
+SYSAUX			       ONLINE
+UNDOTBS1		       ONLINE
+TEMPTS			       ONLINE
+USERS			       ONLINE
+MAX_TS			       ONLINE
+
+6 rows selected.
+
+
+
+SQL> select file_name from dba_data_files where tablespace_name='MAX_TS';
+
+FILE_NAME
+--------------------------------------------------------------------------------
+/u02/app/oracle/oradata/manual/max_ts01.dbf
+/u02/app/oracle/oradata/manual/max_ts02.dbf
+
+SQL> 
+
+
+
+
+EXPORT/IMPORT:
+[oracle@dbserver1 ~]$ pwd
+/home/oracle
+[oracle@dbserver1 ~]$ mkdir -p /home/oracle/exp_dump
+[oracle@dbserver1 ~]$ exp max/max file=/home/oracle/exp_dump/max15Sep17.dmp log=/home/oracle/exp_dump/max15Sep1_log.txt 
+
+Export: Release 11.2.0.3.0 - Production on Fri Sep 15 14:07:27 2017
+
+Copyright (c) 1982, 2011, Oracle and/or its affiliates.  All rights reserved.
+
+
+Connected to: Oracle Database 11g Enterprise Edition Release 11.2.0.3.0 - 64bit Production
+With the Partitioning, OLAP, Data Mining and Real Application Testing options
+Export done in US7ASCII character set and AL16UTF16 NCHAR character set
+server uses AL32UTF8 character set (possible charset conversion)
+
+About to export specified users ...
+. exporting pre-schema procedural objects and actions
+. exporting foreign function library names for user MAX 
+. exporting PUBLIC type synonyms
+. exporting private type synonyms
+. exporting object type definitions for user MAX 
+About to export MAX's objects ...
+. exporting database links
+. exporting sequence numbers
+. exporting cluster definitions
+. about to export MAX's tables via Conventional Path ...
+. . exporting table                           TEST    1000000 rows exported
+. exporting synonyms
+. exporting views
+. exporting stored procedures
+. exporting operators
+. exporting referential integrity constraints
+. exporting triggers
+. exporting indextypes
+. exporting bitmap, functional and extensible indexes
+. exporting posttables actions
+. exporting materialized views
+. exporting snapshot logs
+. exporting job queues
+. exporting refresh groups and children
+. exporting dimensions
+. exporting post-schema procedural objects and actions
+. exporting statistics
+Export terminated successfully without warnings.
+[oracle@dbserver1 ~]$ 
+
+
+SQL> grant dba to shuvo identified by shuvo;
+
+Grant succeeded.
+
+SQL> 
+
+
+[oracle@dbserver1 ~]$ exp shuvo/shuvo file=/home/oracle/exp_dump/max15Sep17_shv.dmp log=/home/oracle/exp_dump/max15Sep1_shv_log.txt owner=max
+
+
+[oracle@dbserver1 ~]$ exp file=/home/oracle/exp_dump/max15Sep17_sys.dmp log=/home/oracle/exp_dump/max15Sep1_sys_log.txt owner=max
+
+Export: Release 11.2.0.3.0 - Production on Fri Sep 15 14:23:58 2017
+
+Copyright (c) 1982, 2011, Oracle and/or its affiliates.  All rights reserved.
+
+
+Username: / as sysdba
+
+
+SQL> drop user max cascade;
+
+User dropped.
+
+SQL> grant dba to max identified by max;
+
+Grant succeeded.
+
+SQL> 
+
+
+[oracle@dbserver1 exp_dump]$ imp max/max file=/home/oracle/exp_dump/max15Sep17.dmp log=/home/oracle/exp_dump/max15Sep17_imp.txt fromuser=max touser=max
+
+Import: Release 11.2.0.3.0 - Production on Fri Sep 15 14:30:43 2017
+
+Copyright (c) 1982, 2011, Oracle and/or its affiliates.  All rights reserved.
+
+
+Connected to: Oracle Database 11g Enterprise Edition Release 11.2.0.3.0 - 64bit Production
+With the Partitioning, OLAP, Data Mining and Real Application Testing options
+
+Export file created by EXPORT:V11.02.00 via conventional path
+import done in US7ASCII character set and AL16UTF16 NCHAR character set
+import server uses AL32UTF8 character set (possible charset conversion)
+. . importing table                         "TEST"    1000000 rows imported
+Import terminated successfully without warnings.
+[oracle@dbserver1 exp_dump]$ 
+
+SQL> grant dba to max2 identified by max2;
+
+Grant succeeded.
+
+SQL> 
+
+[oracle@dbserver1 exp_dump]$ imp file=/home/oracle/exp_dump/max15Sep17.dmp log=/home/oracle/exp_dump/max15Sep17_imp.txt fromuser=max touser=max2
+
+Import: Release 11.2.0.3.0 - Production on Fri Sep 15 14:31:48 2017
+
+Copyright (c) 1982, 2011, Oracle and/or its affiliates.  All rights reserved.
+
+Username: / as sysdba
+
+Connected to: Oracle Database 11g Enterprise Edition Release 11.2.0.3.0 - 64bit Production
+With the Partitioning, OLAP, Data Mining and Real Application Testing options
+
+Export file created by EXPORT:V11.02.00 via conventional path
+
+Warning: the objects were exported by MAX, not by you
+
+import done in US7ASCII character set and AL16UTF16 NCHAR character set
+import server uses AL32UTF8 character set (possible charset conversion)
+. importing MAX's objects into MAX2
+. . importing table                         "TEST"    1000000 rows imported
+Import terminated successfully without warnings.
+[oracle@dbserver1 exp_dump]$ 
+
+
+
+

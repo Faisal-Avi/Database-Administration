@@ -1,0 +1,12 @@
+dbca -silent -deleteDatabase -sourcedb orcldb2 
+
+dbca -silent -createDatabase -templateName General_Purpose.dbc -gdbname orcldb -sid orcldb -responseFile NO_VALUE -characterSet AL32UTF8 -memoryPercentage 40 -emConfiguration LOCAL
+
+
+
+
+$ dbca -silent -createDatabase -templateName General_Purpose.dbc \
+> -gdbname orcl -sid orcl -sysPassword secret -systemPassword secret2 \
+> -emConfiguration none -redoLogFileSize 100 -storageType ASM \
+> -asmsnmpPassword secret3 -diskGroupName data -characterSet AL32UTF8 \
+> -totalMemory 4096

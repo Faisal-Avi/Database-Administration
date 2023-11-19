@@ -1,0 +1,13 @@
+select 
+   os_username,
+   username schema_name,
+   terminal pc_name,
+   to_char(timestamp,'DD-MM-YYYY HH24:MI:SS'),
+   SESSIONID,
+   logoff_time
+from
+   dba_audit_trail
+where terminal = 'ALAMIN1'
+--WHERE TERMINAL = 'DESKTOP-62T6QRK'
+--WHERE TERMINAL = 'ERP8'
+order by timestamp desc

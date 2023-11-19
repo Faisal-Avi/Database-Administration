@@ -1,0 +1,543 @@
+[oracle@dbserver3 Desktop]$ rman target /
+
+Recovery Manager: Release 11.2.0.3.0 - Production on Fri Nov 24 12:14:18 2017
+
+Copyright (c) 1982, 2011, Oracle and/or its affiliates.  All rights reserved.
+
+connected to target database: ORCL (DBID=1488430734)
+
+RMAN>
+
+RMAN> show all;
+
+RMAN configuration parameters for database with db_unique_name ORCL are:
+CONFIGURE RETENTION POLICY TO REDUNDANCY 1; # default
+CONFIGURE BACKUP OPTIMIZATION OFF; # default
+CONFIGURE DEFAULT DEVICE TYPE TO DISK; # default
+CONFIGURE CONTROLFILE AUTOBACKUP ON;
+CONFIGURE CONTROLFILE AUTOBACKUP FORMAT FOR DEVICE TYPE DISK TO '%F'; # default
+CONFIGURE DEVICE TYPE DISK PARALLELISM 1 BACKUP TYPE TO BACKUPSET; # default
+CONFIGURE DATAFILE BACKUP COPIES FOR DEVICE TYPE DISK TO 1; # default
+CONFIGURE ARCHIVELOG BACKUP COPIES FOR DEVICE TYPE DISK TO 1; # default
+CONFIGURE MAXSETSIZE TO UNLIMITED; # default
+CONFIGURE ENCRYPTION FOR DATABASE OFF; # default
+CONFIGURE ENCRYPTION ALGORITHM 'AES128'; # default
+CONFIGURE COMPRESSION ALGORITHM 'BASIC' AS OF RELEASE 'DEFAULT' OPTIMIZE FOR LOAD TRUE ; # default
+CONFIGURE ARCHIVELOG DELETION POLICY TO NONE; # default
+CONFIGURE SNAPSHOT CONTROLFILE NAME TO '/u01/app/oracle/product/11.2.0/db_1/dbs/snapcf_orcl.f'; # default
+
+
+RMAN> backup database plus archivelog;
+
+
+Starting backup at 24-NOV-17
+current log archived
+using channel ORA_DISK_1
+channel ORA_DISK_1: starting archived log backup set
+channel ORA_DISK_1: specifying archived log(s) in backup set
+input archived log thread=1 sequence=5 RECID=1 STAMP=960651497
+input archived log thread=1 sequence=6 RECID=2 STAMP=960651615
+input archived log thread=1 sequence=7 RECID=3 STAMP=960896828
+input archived log thread=1 sequence=8 RECID=4 STAMP=960898517
+channel ORA_DISK_1: starting piece 1 at 24-NOV-17
+channel ORA_DISK_1: finished piece 1 at 24-NOV-17
+piece handle=/u01/app/oracle/fast_recovery_area/ORCL/backupset/2017_11_24/o1_mf_annnn_TAG20171124T121517_f1hg7p4n_.bkp tag=TAG20171124T121517 comment=NONE
+channel ORA_DISK_1: backup set complete, elapsed time: 00:00:07
+Finished backup at 24-NOV-17
+
+Starting backup at 24-NOV-17
+using channel ORA_DISK_1
+channel ORA_DISK_1: starting full datafile backup set
+channel ORA_DISK_1: specifying datafile(s) in backup set
+input datafile file number=00001 name=/u01/app/oracle/oradata/orcl/system01.dbf
+input datafile file number=00002 name=/u01/app/oracle/oradata/orcl/sysaux01.dbf
+input datafile file number=00005 name=/u01/app/oracle/oradata/orcl/example01.dbf
+input datafile file number=00003 name=/u01/app/oracle/oradata/orcl/undotbs01.dbf
+input datafile file number=00004 name=/u01/app/oracle/oradata/orcl/users01.dbf
+channel ORA_DISK_1: starting piece 1 at 24-NOV-17
+
+
+
+channel ORA_DISK_1: finished piece 1 at 24-NOV-17
+piece handle=/u01/app/oracle/fast_recovery_area/ORCL/backupset/2017_11_24/o1_mf_nnndf_TAG20171124T121525_f1hg7xrr_.bkp tag=TAG20171124T121525 comment=NONE
+channel ORA_DISK_1: backup set complete, elapsed time: 00:02:05
+Finished backup at 24-NOV-17
+
+Starting backup at 24-NOV-17
+current log archived
+using channel ORA_DISK_1
+channel ORA_DISK_1: starting archived log backup set
+channel ORA_DISK_1: specifying archived log(s) in backup set
+input archived log thread=1 sequence=9 RECID=5 STAMP=960898651
+channel ORA_DISK_1: starting piece 1 at 24-NOV-17
+channel ORA_DISK_1: finished piece 1 at 24-NOV-17
+piece handle=/u01/app/oracle/fast_recovery_area/ORCL/backupset/2017_11_24/o1_mf_annnn_TAG20171124T121731_f1hgcvq4_.bkp tag=TAG20171124T121731 comment=NONE
+channel ORA_DISK_1: backup set complete, elapsed time: 00:00:01
+Finished backup at 24-NOV-17
+
+Starting Control File and SPFILE Autobackup at 24-NOV-17
+piece handle=/u01/app/oracle/fast_recovery_area/ORCL/autobackup/2017_11_24/o1_mf_s_960898652_f1hgcxk6_.bkp comment=NONE
+Finished Control File and SPFILE Autobackup at 24-NOV-17
+
+
+
+
+NEW NODE:
+[oracle@dbserver4 ~]$ mkdir -p /u01/app/oracle/fast_recovery_area/ORCL/
+
+OLD NODE:
+[oracle@dbserver3 Desktop]$ cd /u01/app/oracle/fast_recovery_area/ORCL/
+[oracle@dbserver3 ORCL]$ ls
+archivelog  autobackup  backupset  onlinelog
+[oracle@dbserver3 ORCL]$ ls
+archivelog  autobackup  backupset  onlinelog
+
+[oracle@dbserver3 ORCL]$ scp -r ** dbserver4:/u01/app/oracle/fast_recovery_area/ORCL
+
+NEW NODE:
+[oracle@dbserver4 ~]$ sqlplus / as sysdba
+
+SQL*Plus: Release 11.2.0.3.0 Production on Fri Nov 24 12:29:17 2017
+
+Copyright (c) 1982, 2011, Oracle.  All rights reserved.
+
+Connected to an idle instance.
+
+SQL> startup nomount
+ORA-01078: failure in processing system parameters
+LRM-00109: could not open parameter file '/u01/app/oracle/product/11.2.0/db_1/dbs/initorcl.ora'
+SQL> exit
+Disconnected
+
+[oracle@dbserver4 autobackup]$ cd /u01/app/oracle/fast_recovery_area/ORCL/autobackup
+[oracle@dbserver4 autobackup]$ 
+
+
+[oracle@dbserver4 2017_11_24]$ pwd
+/u01/app/oracle/fast_recovery_area/ORCL/autobackup/2017_11_24
+[oracle@dbserver4 2017_11_24]$ ls
+o1_mf_s_960898652_f1hgcxk6_.bkp
+[oracle@dbserver4 2017_11_24]$ rman target /
+
+Recovery Manager: Release 11.2.0.3.0 - Production on Fri Nov 24 12:33:15 2017
+
+Copyright (c) 1982, 2011, Oracle and/or its affiliates.  All rights reserved.
+
+connected to target database: DUMMY (not mounted)
+
+RMAN> 
+
+RMAN> set dbid=1488430734
+
+executing command: SET DBID
+
+RMAN> restore spfile from '/u01/app/oracle/fast_recovery_area/ORCL/autobackup/2017_11_24/o1_mf_s_960898652_f1hgcxk6_.bkp';
+
+Starting restore at 24-NOV-17
+using target database control file instead of recovery catalog
+allocated channel: ORA_DISK_1
+channel ORA_DISK_1: SID=19 device type=DISK
+
+channel ORA_DISK_1: restoring spfile from AUTOBACKUP /u01/app/oracle/fast_recovery_area/ORCL/autobackup/2017_11_24/o1_mf_s_960898652_f1hgcxk6_.bkp
+channel ORA_DISK_1: SPFILE restore from AUTOBACKUP complete
+Finished restore at 24-NOV-17
+
+RMAN> 
+
+
+RMAN> exit
+
+
+Recovery Manager complete.
+[oracle@dbserver4 2017_11_24]$ sqlplus / as sysdba
+
+SQL*Plus: Release 11.2.0.3.0 Production on Fri Nov 24 12:35:22 2017
+
+Copyright (c) 1982, 2011, Oracle.  All rights reserved.
+
+
+Connected to:
+Oracle Database 11g Enterprise Edition Release 11.2.0.3.0 - 64bit Production
+With the Partitioning, OLAP, Data Mining and Real Application Testing options
+
+SQL> shu immediate
+ORA-01507: database not mounted
+
+
+ORACLE instance shut down.
+SQL> 
+
+
+[oracle@dbserver4 ~]$ cd /u01/app/oracle/product/11.2.0/db_1/dbs/
+[oracle@dbserver4 dbs]$ ls
+hc_AgDq.dat  hc_orcl.dat  lkAGDQ_TSPITR_ORCL  spfileorcl.ora  spfileorcl.ora_bkp
+[oracle@dbserver4 dbs]$ sqlplus / as sysdba
+
+SQL*Plus: Release 11.2.0.3.0 Production on Fri Nov 24 12:39:35 2017
+
+Copyright (c) 1982, 2011, Oracle.  All rights reserved.
+
+Connected to an idle instance.
+
+SQL> create pfile from spfile;
+
+File created.
+
+[oracle@dbserver4 dbs]$ cat initorcl.ora 
+orcl.__db_cache_size=331350016
+orcl.__java_pool_size=4194304
+orcl.__large_pool_size=4194304
+orcl.__oracle_base='/u01/app/oracle'#ORACLE_BASE set from environment
+orcl.__pga_aggregate_target=335544320
+orcl.__sga_target=499122176
+orcl.__shared_io_pool_size=0
+orcl.__shared_pool_size=150994944
+orcl.__streams_pool_size=0
+*.audit_file_dest='/u01/app/oracle/admin/orcl/adump'
+*.audit_trail='db'
+*.compatible='11.2.0.0.0'
+*.control_files='/u01/app/oracle/oradata/orcl/control01.ctl','/u01/app/oracle/fast_recovery_area/orcl/control02.ctl'
+*.db_block_size=8192
+*.db_domain=''
+*.db_name='orcl'
+*.db_recovery_file_dest='/u01/app/oracle/fast_recovery_area'
+*.db_recovery_file_dest_size=43222302720
+*.diagnostic_dest='/u01/app/oracle'
+*.dispatchers='(PROTOCOL=TCP) (SERVICE=orclXDB)'
+*.log_archive_format='%t_%s_%r.dbf'
+*.memory_target=834666496
+*.open_cursors=300
+*.processes=150
+*.remote_login_passwordfile='EXCLUSIVE'
+*.undo_tablespace='UNDOTBS1'
+[oracle@dbserver4 dbs]$ 
+
+
+[oracle@dbserver4 dbs]$ mkdir -p /u01/app/oracle/admin/orcl/adump
+[oracle@dbserver4 dbs]$ mkdir -p /u01/app/oracle/oradata/orcl/
+[oracle@dbserver4 dbs]$ mkdir -p /u01/app/oracle/fast_recovery_area/orcl
+[oracle@dbserver4 dbs]$ 
+[oracle@dbserver4 dbs]$ 
+[oracle@dbserver4 dbs]$ 
+[oracle@dbserver4 dbs]$ mkdir -p /u01/app/oracle/fast_recovery_area
+[oracle@dbserver4 dbs]$ 
+
+RMAN> startup nomount
+
+Oracle instance started
+
+Total System Global Area     830930944 bytes
+
+Fixed Size                     2232920 bytes
+Variable Size                494931368 bytes
+Database Buffers             331350016 bytes
+Redo Buffers                   2416640 bytes
+
+RMAN> restore controlfile from autobackup;
+
+Starting restore at 24-NOV-17
+using target database control file instead of recovery catalog
+allocated channel: ORA_DISK_1
+channel ORA_DISK_1: SID=19 device type=DISK
+
+recovery area destination: /u01/app/oracle/fast_recovery_area
+database name (or database unique name) used for search: ORCL
+channel ORA_DISK_1: AUTOBACKUP /u01/app/oracle/fast_recovery_area/ORCL/autobackup/2017_11_24/o1_mf_s_960898652_f1hgcxk6_.bkp found in the recovery area
+AUTOBACKUP search with format "%F" not attempted because DBID was not set
+channel ORA_DISK_1: restoring control file from AUTOBACKUP /u01/app/oracle/fast_recovery_area/ORCL/autobackup/2017_11_24/o1_mf_s_960898652_f1hgcxk6_.bkp
+channel ORA_DISK_1: control file restore from AUTOBACKUP complete
+output file name=/u01/app/oracle/oradata/orcl/control01.ctl
+output file name=/u01/app/oracle/fast_recovery_area/orcl/control02.ctl
+Finished restore at 24-NOV-17
+
+RMAN> alter database mount;
+
+database mounted
+released channel: ORA_DISK_1
+
+RMAN> 
+
+
+RMAN> restore database;
+
+RMAN> recover database;
+
+RMAN> alter database open resetlogs;
+
+database opened
+
+RMAN> 
+
+
+[root@dbserver4 ~]# vi /etc/oratab 
+
+orcl:/u01/app/oracle/product/11.2.0/db_1:N
+
+
+##################################################################
+
+DIFFERENT LOCATION:
+################################################################3###
+
+
+[oracle@dbserver4 2017_11_24]$ rman target /
+
+Recovery Manager: Release 11.2.0.3.0 - Production on Fri Nov 24 14:24:52 2017
+
+Copyright (c) 1982, 2011, Oracle and/or its affiliates.  All rights reserved.
+
+connected to target database (not started)
+
+RMAN> startup nomount
+
+startup failed: ORA-01078: failure in processing system parameters
+LRM-00109: could not open parameter file '/u01/app/oracle/product/11.2.0/db_1/dbs/initorcl.ora'
+
+starting Oracle instance without parameter file for retrieval of spfile
+Oracle instance started
+
+Total System Global Area     158662656 bytes
+
+Fixed Size                     2226456 bytes
+Variable Size                 92276456 bytes
+Database Buffers              58720256 bytes
+Redo Buffers                   5439488 bytes
+
+RMAN> set dbid=1488430734
+
+executing command: SET DBID
+
+RMAN> restore spfile from '/u01/app/oracle/fast_recovery_area/ORCL/autobackup/2017_11_24/o1_mf_s_960906019_f1hol3x7_.bkp';
+
+Starting restore at 24-NOV-17
+using target database control file instead of recovery catalog
+allocated channel: ORA_DISK_1
+channel ORA_DISK_1: SID=18 device type=DISK
+
+channel ORA_DISK_1: restoring spfile from AUTOBACKUP /u01/app/oracle/fast_recovery_area/ORCL/autobackup/2017_11_24/o1_mf_s_960906019_f1hol3x7_.bkp
+channel ORA_DISK_1: SPFILE restore from AUTOBACKUP complete
+Finished restore at 24-NOV-17
+
+RMAN> exit
+
+
+Recovery Manager complete.
+[oracle@dbserver4 2017_11_24]$ sqlplus / as sysdba
+
+SQL*Plus: Release 11.2.0.3.0 Production on Fri Nov 24 14:26:16 2017
+
+Copyright (c) 1982, 2011, Oracle.  All rights reserved.
+
+
+Connected to:
+Oracle Database 11g Enterprise Edition Release 11.2.0.3.0 - 64bit Production
+With the Partitioning, OLAP, Data Mining and Real Application Testing options
+
+SQL> shu immediate
+ORA-01507: database not mounted
+
+
+ORACLE instance shut down.
+SQL> exit
+Disconnected from Oracle Database 11g Enterprise Edition Release 11.2.0.3.0 - 64bit Production
+With the Partitioning, OLAP, Data Mining and Real Application Testing options
+[oracle@dbserver4 2017_11_24]$ cd /u01/app/oracle/product/11.2.0/db_1/dbs/
+[oracle@dbserver4 dbs]$ 
+
+
+[oracle@dbserver4 2017_11_24]$ cd /u01/app/oracle/product/11.2.0/db_1/dbs/
+[oracle@dbserver4 dbs]$ ls
+hc_AgDq.dat  hc_orcl.dat  lkAGDQ_TSPITR_ORCL  spfileorcl.ora  spfileorcl.ora_bkp
+[oracle@dbserver4 dbs]$ sqlplus / as sysdba
+
+SQL*Plus: Release 11.2.0.3.0 Production on Fri Nov 24 14:28:34 2017
+
+Copyright (c) 1982, 2011, Oracle.  All rights reserved.
+
+Connected to an idle instance.
+
+SQL> create pfile from spfile;
+
+File created.
+
+SQL> 
+
+[oracle@dbserver4 dbs]$ cat initorcl.ora 
+orcl.__db_cache_size=331350016
+orcl.__java_pool_size=4194304
+orcl.__large_pool_size=4194304
+orcl.__oracle_base='/u01/app/oracle'#ORACLE_BASE set from environment
+orcl.__pga_aggregate_target=335544320
+orcl.__sga_target=499122176
+orcl.__shared_io_pool_size=0
+orcl.__shared_pool_size=150994944
+orcl.__streams_pool_size=0
+*.audit_file_dest='/u01/app/oracle/admin/orcl/adump'
+*.audit_trail='db'
+*.compatible='11.2.0.0.0'
+*.control_files='/u01/app/oracle/oradata/orcl/control01.ctl','/u01/app/oracle/fast_recovery_area/orcl/control02.ctl'
+*.db_block_size=8192
+*.db_domain=''
+*.db_name='orcl'
+*.db_recovery_file_dest='/u01/app/oracle/fast_recovery_area'
+*.db_recovery_file_dest_size=43222302720
+*.diagnostic_dest='/u01/app/oracle'
+*.dispatchers='(PROTOCOL=TCP) (SERVICE=orclXDB)'
+*.log_archive_format='%t_%s_%r.dbf'
+*.memory_target=834666496
+*.open_cursors=300
+*.processes=150
+*.remote_login_passwordfile='EXCLUSIVE'
+*.undo_tablespace='UNDOTBS1'
+[oracle@dbserver4 dbs]$ 
+
+
+
+[oracle@dbserver4 dbs]$ cat initorcl.ora 
+orcl.__db_cache_size=331350016
+orcl.__java_pool_size=4194304
+orcl.__large_pool_size=4194304
+orcl.__oracle_base='/u01/app/oracle'#ORACLE_BASE set from environment
+orcl.__pga_aggregate_target=335544320
+orcl.__sga_target=499122176
+orcl.__shared_io_pool_size=0
+orcl.__shared_pool_size=150994944
+orcl.__streams_pool_size=0
+*.audit_file_dest='/u02/app/oracle/admin/orcl/adump'   -----------------------------------------
+*.audit_trail='db'
+*.compatible='11.2.0.0.0'
+*.control_files='/u01/app/oracle/oradata/orcl/control01.ctl','/u01/app/oracle/fast_recovery_area/orcl/control02.ctl'
+*.db_block_size=8192
+*.db_domain=''
+*.db_name='orcl'
+*.db_recovery_file_dest='/u01/app/oracle/fast_recovery_area'
+*.db_recovery_file_dest_size=43222302720
+*.diagnostic_dest='/u01/app/oracle'
+*.dispatchers='(PROTOCOL=TCP) (SERVICE=orclXDB)'
+*.log_archive_format='%t_%s_%r.dbf'
+*.memory_target=834666496
+*.open_cursors=300
+*.processes=150
+*.remote_login_passwordfile='EXCLUSIVE'
+*.undo_tablespace='UNDOTBS1'
+
+
+
+[oracle@dbserver4 dbs]$ mkdir -p /u02/app/oracle/admin/orcl/adump
+[oracle@dbserver4 dbs]$ mkdir /u04/abc
+mkdir: cannot create directory `/u04/abc': No such file or directory
+[oracle@dbserver4 dbs]$ sqlplus / as sysdba
+
+SQL*Plus: Release 11.2.0.3.0 Production on Fri Nov 24 14:33:12 2017
+
+Copyright (c) 1982, 2011, Oracle.  All rights reserved.
+
+Connected to an idle instance.
+
+SQL> startup nomount pfile=initorcl.ora
+ORACLE instance started.
+
+Total System Global Area  830930944 bytes
+Fixed Size		    2232920 bytes
+Variable Size		  494931368 bytes
+Database Buffers	  331350016 bytes
+Redo Buffers		    2416640 bytes
+SQL> create spfile from pfile;
+
+File created.
+
+SQL> shu immediate 
+ORA-01507: database not mounted
+
+
+ORACLE instance shut down.
+SQL> 
+
+
+SQL> alter system set control_files='/u02/app/oracle/oradata/orcl/control01.ctl','/u02/app/oracle/fast_recovery_area/orcl/control02.ctl' scope=spfile;
+
+System altered.
+
+SQL> shu immediate
+ORA-01507: database not mounted
+
+
+ORACLE instance shut down.
+SQL> startup nomount
+ORACLE instance started.
+
+Total System Global Area  830930944 bytes
+Fixed Size		    2232920 bytes
+Variable Size		  494931368 bytes
+Database Buffers	  331350016 bytes
+Redo Buffers		    2416640 bytes
+
+[oracle@dbserver4 dbs]$ rman target /
+
+Recovery Manager: Release 11.2.0.3.0 - Production on Fri Nov 24 14:40:06 2017
+
+Copyright (c) 1982, 2011, Oracle and/or its affiliates.  All rights reserved.
+
+connected to target database: ORCL (not mounted)
+
+RMAN> set dbid=1488430734
+
+executing command: SET DBID
+
+RMAN> restore controlfile from autobackup;
+
+Starting restore at 24-NOV-17
+using target database control file instead of recovery catalog
+allocated channel: ORA_DISK_1
+channel ORA_DISK_1: SID=19 device type=DISK
+
+recovery area destination: /u01/app/oracle/fast_recovery_area
+database name (or database unique name) used for search: ORCL
+channel ORA_DISK_1: AUTOBACKUP /u01/app/oracle/fast_recovery_area/ORCL/autobackup/2017_11_24/o1_mf_s_960906019_f1hol3x7_.bkp found in the recovery area
+channel ORA_DISK_1: looking for AUTOBACKUP on day: 20171124
+channel ORA_DISK_1: restoring control file from AUTOBACKUP /u01/app/oracle/fast_recovery_area/ORCL/autobackup/2017_11_24/o1_mf_s_960906019_f1hol3x7_.bkp
+channel ORA_DISK_1: control file restore from AUTOBACKUP complete
+output file name=/u02/app/oracle/oradata/orcl/control01.ctl
+output file name=/u02/app/oracle/fast_recovery_area/orcl/control02.ctl
+Finished restore at 24-NOV-17
+
+RMAN> 
+
+
+RMAN> alter database mount;
+
+database mounted
+released channel: ORA_DISK_1
+
+RMAN>  run
+  { 
+  set newname for database to '/u02/app/oracle/oradata/orcl/%b' ;
+  restore database ;
+  switch datafile all;
+  switch tempfile all;
+  }2> 3> 4> 5> 6> 7> 
+
+executing command: SET NEWNAME
+
+
+SQL> ALTER DATABASE RENAME FILE '/u01/app/oracle/oradata/orcl/redo01.log' TO '/u02/app/oracle/oradata/orcl/redo01.log';
+
+Database altered.
+
+SQL> ALTER DATABASE RENAME FILE '/u01/app/oracle/oradata/orcl/redo02.log' TO '/u02/app/oracle/oradata/orcl/redo02.log';
+
+Database altered.
+
+SQL> ALTER DATABASE RENAME FILE '/u01/app/oracle/oradata/orcl/redo03.log' TO '/u02/app/oracle/oradata/orcl/redo03.log';
+
+Database altered.
+
+
+
+RMAN> recover database;
+
+RMAN> alter database open resetlogs;
+
+
+
+

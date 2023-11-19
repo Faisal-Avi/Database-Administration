@@ -1,0 +1,72 @@
+Export Command 
+
+expdp directory=dir_max dumpfile=max logfile=maxlog.txt schemas=max,
+
+
+import Command
+
+impdp directory=dir_max dumpfile=max.dmp logfile=max_max2_imp.log  remap_schema=max:max4 remap_table=max.test:test1;
+
+remape table 
+
+> impdp hr DIRECTORY=dpump_dir1 DUMPFILE=expschema.dmp
+TABLES=hr.employees REMAP_TABLE=hr.employees:emps 
+
+
+Database Connect Command 
+
+sqlplus max4/max;
+
+select table_name from user_tables
+where table_name like '%rakib%';
+
+another export command metadata and data 
+
+
+expdp directory=dir_max dumpfile=max211017.dmp logfile=max211017log.txt schemas=max content=metadata_only
+
+expdp directory=dir_max dumpfile=mhsh.dmp logfile=mhshslog.txt schemas=rakib content=data_only;
+
+Ipmort Command 
+
+impdp directory=dir_max dumpfile=mhsh.dmp logfile=mhsh_imp.log  remap_schema=rakib:new_rakib;
+
+impdp directory=dir_max dumpfile=mhsh_d.dmp logfile=mhsh_d2.log remap_schema=rakib:new_rakib
+
+
+***------------Create USER and Tablespace---------------***
+
+create tablespace dbadb_ts datafile '/u01/app/oracle/oradata/manual/dbadb_ts01.dbf' size 2g autoextend on next 2g maxsize 30g;
+
+****----------------User Create----------------***
+
+create user dbabd identified by dbabd default tablespace dbadb_ts; 
+
+****------------Create Tablespace DBABD1-----------*****
+
+create tablespace dbabd_tbs datafile '/u01/app/oracle/oradata/manual/dbabd_tbs.dbf' size 2g autoextend on next 2g maxsize 30g;
+
+
+********-----------Export Data DBABD--------***********
+
+expdp directory=dir_max dumpfile=dbabd.dmp logfile=dbabdlog.txt schemas=bdabd
+
+
+
+******------------------DROP TABLE SPACE COMMAND -------------***********
+
+
+drop tablespace dbadb_ts including contents and datafiles cascade constraints;
+
+
+**********--------------- USER DROP COMMAND ------------**********
+
+drop user dbabd cascade; 
+
+
+
+
+
+
+
+

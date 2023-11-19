@@ -1,0 +1,376 @@
+SQL> desc dba_profiles;
+ Name					   Null?    Type
+ ----------------------------------------- -------- ----------------------------
+ PROFILE				   NOT NULL VARCHAR2(30)
+ RESOURCE_NAME				   NOT NULL VARCHAR2(32)
+ RESOURCE_TYPE					    VARCHAR2(8)
+ LIMIT						    VARCHAR2(40)
+
+SQL> set line 250
+SQL> col profile format a20
+SQL> col resource_name format a20
+SQL> select * from dba_profiles;
+
+PROFILE 	     RESOURCE_NAME	  RESOURCE LIMIT
+-------------------- -------------------- -------- ----------------------------------------
+DEFAULT 	     COMPOSITE_LIMIT	  KERNEL   UNLIMITED
+DEFAULT 	     SESSIONS_PER_USER	  KERNEL   UNLIMITED
+DEFAULT 	     CPU_PER_SESSION	  KERNEL   UNLIMITED
+DEFAULT 	     CPU_PER_CALL	  KERNEL   UNLIMITED
+DEFAULT 	     LOGICAL_READS_PER_SE KERNEL   UNLIMITED
+		     SSION
+
+DEFAULT 	     LOGICAL_READS_PER_CA KERNEL   UNLIMITED
+		     LL
+
+DEFAULT 	     IDLE_TIME		  KERNEL   UNLIMITED
+
+PROFILE 	     RESOURCE_NAME	  RESOURCE LIMIT
+-------------------- -------------------- -------- ----------------------------------------
+DEFAULT 	     CONNECT_TIME	  KERNEL   UNLIMITED
+DEFAULT 	     PRIVATE_SGA	  KERNEL   UNLIMITED
+DEFAULT 	     FAILED_LOGIN_ATTEMPT PASSWORD 10
+		     S
+
+DEFAULT 	     PASSWORD_LIFE_TIME   PASSWORD 180
+DEFAULT 	     PASSWORD_REUSE_TIME  PASSWORD UNLIMITED
+DEFAULT 	     PASSWORD_REUSE_MAX   PASSWORD UNLIMITED
+DEFAULT 	     PASSWORD_VERIFY_FUNC PASSWORD NULL
+		     TION
+
+
+PROFILE 	     RESOURCE_NAME	  RESOURCE LIMIT
+-------------------- -------------------- -------- ----------------------------------------
+DEFAULT 	     PASSWORD_LOCK_TIME   PASSWORD 1
+DEFAULT 	     PASSWORD_GRACE_TIME  PASSWORD 7
+
+16 rows selected.
+
+SQL> desc dba_users;
+ Name					   Null?    Type
+ ----------------------------------------- -------- ----------------------------
+ USERNAME				   NOT NULL VARCHAR2(30)
+ USER_ID				   NOT NULL NUMBER
+ PASSWORD					    VARCHAR2(30)
+ ACCOUNT_STATUS 			   NOT NULL VARCHAR2(32)
+ LOCK_DATE					    DATE
+ EXPIRY_DATE					    DATE
+ DEFAULT_TABLESPACE			   NOT NULL VARCHAR2(30)
+ TEMPORARY_TABLESPACE			   NOT NULL VARCHAR2(30)
+ CREATED				   NOT NULL DATE
+ PROFILE				   NOT NULL VARCHAR2(30)
+ INITIAL_RSRC_CONSUMER_GROUP			    VARCHAR2(30)
+ EXTERNAL_NAME					    VARCHAR2(4000)
+ PASSWORD_VERSIONS				    VARCHAR2(8)
+ EDITIONS_ENABLED				    VARCHAR2(1)
+ AUTHENTICATION_TYPE				    VARCHAR2(8)
+
+SQL> select username,profile from dba_users where username='MAX';
+
+USERNAME		       PROFILE
+------------------------------ ------------------------------
+MAX			       DEFAULT
+
+SQL> 
+
+
+
+ CREATE PROFILE MAX_PROFILE LIMIT
+ SESSIONS_PER_USER 2
+ IDLE_TIME 5
+ FAILED_LOGIN_ATTEMPTS 5
+ ;
+ 
+ 
+SQL> select * from dba_profiles order by profile;
+
+PROFILE 	     RESOURCE_NAME	  RESOURCE LIMIT
+-------------------- -------------------- -------- ----------------------------------------
+DEFAULT 	     COMPOSITE_LIMIT	  KERNEL   UNLIMITED
+DEFAULT 	     PASSWORD_LOCK_TIME   PASSWORD 1
+DEFAULT 	     PASSWORD_VERIFY_FUNC PASSWORD NULL
+		     TION
+
+DEFAULT 	     PASSWORD_REUSE_MAX   PASSWORD UNLIMITED
+DEFAULT 	     PASSWORD_REUSE_TIME  PASSWORD UNLIMITED
+DEFAULT 	     PASSWORD_LIFE_TIME   PASSWORD 180
+DEFAULT 	     FAILED_LOGIN_ATTEMPT PASSWORD 10
+		     S
+
+
+PROFILE 	     RESOURCE_NAME	  RESOURCE LIMIT
+-------------------- -------------------- -------- ----------------------------------------
+DEFAULT 	     PRIVATE_SGA	  KERNEL   UNLIMITED
+DEFAULT 	     CONNECT_TIME	  KERNEL   UNLIMITED
+DEFAULT 	     IDLE_TIME		  KERNEL   UNLIMITED
+DEFAULT 	     LOGICAL_READS_PER_CA KERNEL   UNLIMITED
+		     LL
+
+DEFAULT 	     LOGICAL_READS_PER_SE KERNEL   UNLIMITED
+		     SSION
+
+DEFAULT 	     CPU_PER_CALL	  KERNEL   UNLIMITED
+DEFAULT 	     CPU_PER_SESSION	  KERNEL   UNLIMITED
+
+PROFILE 	     RESOURCE_NAME	  RESOURCE LIMIT
+-------------------- -------------------- -------- ----------------------------------------
+DEFAULT 	     SESSIONS_PER_USER	  KERNEL   UNLIMITED
+DEFAULT 	     PASSWORD_GRACE_TIME  PASSWORD 7
+MAX_PROFILE	     PASSWORD_GRACE_TIME  PASSWORD DEFAULT
+MAX_PROFILE	     COMPOSITE_LIMIT	  KERNEL   DEFAULT
+MAX_PROFILE	     PASSWORD_REUSE_TIME  PASSWORD DEFAULT
+MAX_PROFILE	     IDLE_TIME		  KERNEL   5
+MAX_PROFILE	     PASSWORD_VERIFY_FUNC PASSWORD DEFAULT
+		     TION
+
+MAX_PROFILE	     LOGICAL_READS_PER_CA KERNEL   DEFAULT
+		     LL
+
+PROFILE 	     RESOURCE_NAME	  RESOURCE LIMIT
+-------------------- -------------------- -------- ----------------------------------------
+
+MAX_PROFILE	     PASSWORD_LIFE_TIME   PASSWORD DEFAULT
+MAX_PROFILE	     LOGICAL_READS_PER_SE KERNEL   DEFAULT
+		     SSION
+
+MAX_PROFILE	     PASSWORD_LOCK_TIME   PASSWORD DEFAULT
+MAX_PROFILE	     CPU_PER_CALL	  KERNEL   DEFAULT
+MAX_PROFILE	     FAILED_LOGIN_ATTEMPT PASSWORD 5
+		     S
+
+MAX_PROFILE	     CPU_PER_SESSION	  KERNEL   DEFAULT
+
+PROFILE 	     RESOURCE_NAME	  RESOURCE LIMIT
+-------------------- -------------------- -------- ----------------------------------------
+MAX_PROFILE	     PASSWORD_REUSE_MAX   PASSWORD DEFAULT
+MAX_PROFILE	     SESSIONS_PER_USER	  KERNEL   2
+MAX_PROFILE	     PRIVATE_SGA	  KERNEL   DEFAULT
+MAX_PROFILE	     CONNECT_TIME	  KERNEL   DEFAULT
+
+32 rows selected.
+
+SQL> 
+
+
+SQL> select username,profile from dba_users where username='MAX';
+
+USERNAME		       PROFILE
+------------------------------ ------------------------------
+MAX			       DEFAULT
+
+SQL> alter user max profile MAX_PROFILE;
+
+User altered.
+
+SQL> select username,profile from dba_users where username='MAX';
+
+USERNAME		       PROFILE
+------------------------------ ------------------------------
+MAX			       MAX_PROFILE
+
+SQL> 
+
+
+5 times wrong password for Shuvo Bhai
+######################################
+Enter user-name: 
+ERROR:
+ORA-01017: invalid username/password; logon denied
+
+
+SP2-0157: unable to CONNECT to ORACLE after 3 attempts, exiting SQL*Plus
+[oracle@dbserver1 ~]$ 
+[oracle@dbserver1 ~]$ sqlplus max/asas
+
+SQL*Plus: Release 11.2.0.3.0 Production on Tue Sep 19 20:19:18 2017
+
+Copyright (c) 1982, 2011, Oracle.  All rights reserved.
+
+ERROR:
+ORA-28000: the account is locked
+
+
+Enter user-name: 
+
+
+
+SQL> select username,account_status from dba_users where username='MAX';
+
+USERNAME		       ACCOUNT_STATUS
+------------------------------ --------------------------------
+MAX			       LOCKED(TIMED)
+
+SQL> alter user max identified by max account unlock;
+
+User altered.
+
+SQL> select username,account_status from dba_users where username='MAX';
+
+USERNAME		       ACCOUNT_STATUS
+------------------------------ --------------------------------
+MAX			       OPEN
+
+SQL> 
+
+https://docs.oracle.com/cd/B19306_01/server.102/b14200/statements_6010.htm
+
+
+
+
+
+[oracle@dbserver1 ~]$ mkdir -p /u01/datapump
+[oracle@dbserver1 ~]$ 
+[oracle@dbserver1 ~]$ 
+[oracle@dbserver1 ~]$ sqlplus / as sysdba
+
+SQL*Plus: Release 11.2.0.3.0 Production on Tue Sep 19 20:59:20 2017
+
+Copyright (c) 1982, 2011, Oracle.  All rights reserved.
+
+
+Connected to:
+Oracle Database 11g Enterprise Edition Release 11.2.0.3.0 - 64bit Production
+With the Partitioning, OLAP, Data Mining and Real Application Testing options
+
+SQL> create directory dir_max as '/u01/datapump';
+
+Directory created.
+
+SQL> grant dba to max;[oracle@dbserver1 ~]$ expdp directory=dir_max dumpfile=max logfile=maxlog.txt schemas=max,saiful 
+
+Export: Release 11.2.0.3.0 - Production on Tue Sep 19 21:03:15 2017
+
+Copyright (c) 1982, 2011, Oracle and/or its affiliates.  All rights reserved.
+
+Username: / as sysdba
+
+Connected to: Oracle Database 11g Enterprise Edition Release 11.2.0.3.0 - 64bit Production
+With the Partitioning, OLAP, Data Mining and Real Application Testing options
+Starting "SYS"."SYS_EXPORT_SCHEMA_01":  /******** AS SYSDBA directory=dir_max dumpfile=max logfile=maxlog.txt schemas=max,saiful 
+Estimate in progress using BLOCKS method...
+Processing object type SCHEMA_EXPORT/TABLE/TABLE_DATA
+Total estimation using BLOCKS method: 18.06 MB
+Processing object type SCHEMA_EXPORT/USER
+Processing object type SCHEMA_EXPORT/SYSTEM_GRANT
+Processing object type SCHEMA_EXPORT/ROLE_GRANT
+Processing object type SCHEMA_EXPORT/DEFAULT_ROLE
+Processing object type SCHEMA_EXPORT/PASSWORD_HISTORY
+Processing object type SCHEMA_EXPORT/PRE_SCHEMA/PROCACT_SCHEMA
+Processing object type SCHEMA_EXPORT/TABLE/TABLE
+Processing object type SCHEMA_EXPORT/TABLE/STATISTICS/TABLE_STATISTICS
+. . exported "MAX"."TEST"                                14.29 MB 1000000 rows
+. . exported "MAX"."CUSTOMER2"                           5.429 KB       3 rows
+. . exported "MAX"."CUSTOMER"                                0 KB       0 rows
+Master table "SYS"."SYS_EXPORT_SCHEMA_01" successfully loaded/unloaded
+******************************************************************************
+Dump file set for SYS.SYS_EXPORT_SCHEMA_01 is:
+  /u01/datapump/max.dmp
+Job "SYS"."SYS_EXPORT_SCHEMA_01" successfully completed at 21:04:37
+
+
+
+Grant succeeded.
+
+SQL> grant read,write on directory dir_max to max;
+
+Grant succeeded.
+
+SQL> exit
+
+
+
+[oracle@dbserver1 ~]$ sqlplus / as sysdba
+
+SQL*Plus: Release 11.2.0.3.0 Production on Tue Sep 19 21:05:23 2017
+
+Copyright (c) 1982, 2011, Oracle.  All rights reserved.
+
+
+Connected to:
+Oracle Database 11g Enterprise Edition Release 11.2.0.3.0 - 64bit Production
+With the Partitioning, OLAP, Data Mining and Real Application Testing options
+
+SQL> drop user max cascade;
+
+User dropped.
+
+SQL> drop user saiful cascade;
+
+User dropped.
+
+SQL> 
+SQL> 
+SQL> 
+SQL> exit
+Disconnected from Oracle Database 11g Enterprise Edition Release 11.2.0.3.0 - 64bit Production
+With the Partitioning, OLAP, Data Mining and Real Application Testing options
+[oracle@dbserver1 ~]$ impdp directory=dir_max dumpfile=max.dmp logfile=maxlog_imp.log 
+
+Import: Release 11.2.0.3.0 - Production on Tue Sep 19 21:10:12 2017
+
+Copyright (c) 1982, 2011, Oracle and/or its affiliates.  All rights reserved.
+
+Username: / as sysdba
+
+Connected to: Oracle Database 11g Enterprise Edition Release 11.2.0.3.0 - 64bit Production
+With the Partitioning, OLAP, Data Mining and Real Application Testing options
+Master table "SYS"."SYS_IMPORT_FULL_01" successfully loaded/unloaded
+Starting "SYS"."SYS_IMPORT_FULL_01":  /******** AS SYSDBA directory=dir_max dumpfile=max.dmp logfile=maxlog_imp.log 
+Processing object type SCHEMA_EXPORT/USER
+Processing object type SCHEMA_EXPORT/SYSTEM_GRANT
+Processing object type SCHEMA_EXPORT/ROLE_GRANT
+Processing object type SCHEMA_EXPORT/DEFAULT_ROLE
+Processing object type SCHEMA_EXPORT/PASSWORD_HISTORY
+Processing object type SCHEMA_EXPORT/PRE_SCHEMA/PROCACT_SCHEMA
+Processing object type SCHEMA_EXPORT/TABLE/TABLE
+Processing object type SCHEMA_EXPORT/TABLE/TABLE_DATA
+. . imported "MAX"."TEST"                                14.29 MB 1000000 rows
+. . imported "MAX"."CUSTOMER2"                           5.429 KB       3 rows
+. . imported "MAX"."CUSTOMER"                                0 KB       0 rows
+Processing object type SCHEMA_EXPORT/TABLE/STATISTICS/TABLE_STATISTICS
+Job "SYS"."SYS_IMPORT_FULL_01" successfully completed at 21:10:22
+
+[oracle@dbserver1 ~]$ 
+
+SQL> grant dba to arafat identified by arafat;
+
+Grant succeeded.
+
+SQL> grant dba to mijan identified by mijan;
+
+Grant succeeded.
+
+SQL> 
+
+
+[oracle@dbserver1 ~]$ impdp directory=dir_max dumpfile=max.dmp logfile=max_arafat_mijan_imp.log  remap_schema=max:arafat,saiful:mijan 
+
+Import: Release 11.2.0.3.0 - Production on Tue Sep 19 21:13:08 2017
+
+Copyright (c) 1982, 2011, Oracle and/or its affiliates.  All rights reserved.
+
+Username: / as sysdba
+
+Connected to: Oracle Database 11g Enterprise Edition Release 11.2.0.3.0 - 64bit Production
+With the Partitioning, OLAP, Data Mining and Real Application Testing options
+Master table "SYS"."SYS_IMPORT_FULL_01" successfully loaded/unloaded
+Starting "SYS"."SYS_IMPORT_FULL_01":  /******** AS SYSDBA directory=dir_max dumpfile=max.dmp logfile=max_arafat_mijan_imp.log remap_schema=max:arafat,saiful:mijan 
+Processing object type SCHEMA_EXPORT/USER
+ORA-31684: Object type USER:"ARAFAT" already exists
+ORA-31684: Object type USER:"MIJAN" already exists
+Processing object type SCHEMA_EXPORT/SYSTEM_GRANT
+Processing object type SCHEMA_EXPORT/ROLE_GRANT
+Processing object type SCHEMA_EXPORT/DEFAULT_ROLE
+Processing object type SCHEMA_EXPORT/PASSWORD_HISTORY
+Processing object type SCHEMA_EXPORT/PRE_SCHEMA/PROCACT_SCHEMA
+Processing object type SCHEMA_EXPORT/TABLE/TABLE
+Processing object type SCHEMA_EXPORT/TABLE/TABLE_DATA
+. . imported "ARAFAT"."TEST"                             14.29 MB 1000000 rows
+. . imported "ARAFAT"."CUSTOMER2"                        5.429 KB       3 rows
+. . imported "ARAFAT"."CUSTOMER"                             0 KB       0 rows
+Processing object type SCHEMA_EXPORT/TABLE/STATISTICS/TABLE_STATISTICS
+Job "SYS"."SYS_IMPORT_FULL_01" completed with 2 error(s) at 21:13:16
+
+[oracle@dbserver1 ~]$ 
+
+

@@ -1,0 +1,515 @@
+RMAN> backup datafile 4 tag datafile4backup;
+
+Starting backup at 13-OCT-17
+using channel ORA_DISK_1
+channel ORA_DISK_1: starting full datafile backup set
+channel ORA_DISK_1: specifying datafile(s) in backup set
+input datafile file number=00004 name=/u01/app/oracle/oradata/orcl/users01.dbf
+channel ORA_DISK_1: starting piece 1 at 13-OCT-17
+channel ORA_DISK_1: finished piece 1 at 13-OCT-17
+piece handle=/u01/app/oracle/fast_recovery_area/ORCL/backupset/2017_10_13/o1_mf_nnndf_DATAFILE4BACKUP_dy0p5gyk_.bkp tag=DATAFILE4BACKUP comment=NONE
+channel ORA_DISK_1: backup set complete, elapsed time: 00:00:01
+Finished backup at 13-OCT-17
+
+Starting Control File and SPFILE Autobackup at 13-OCT-17
+piece handle=/u01/app/oracle/fast_recovery_area/ORCL/autobackup/2017_10_13/o1_mf_s_957269392_dy0p5j99_.bkp comment=NONE
+Finished Control File and SPFILE Autobackup at 13-OCT-17
+
+RMAN> backup datafile 4,5 tag datafile45backup;
+
+Starting backup at 13-OCT-17
+using channel ORA_DISK_1
+channel ORA_DISK_1: starting full datafile backup set
+channel ORA_DISK_1: specifying datafile(s) in backup set
+input datafile file number=00005 name=/u01/app/oracle/oradata/orcl/example01.dbf
+input datafile file number=00004 name=/u01/app/oracle/oradata/orcl/users01.dbf
+channel ORA_DISK_1: starting piece 1 at 13-OCT-17
+channel ORA_DISK_1: finished piece 1 at 13-OCT-17
+piece handle=/u01/app/oracle/fast_recovery_area/ORCL/backupset/2017_10_13/o1_mf_nnndf_DATAFILE45BACKUP_dy0p7g7f_.bkp tag=DATAFILE45BACKUP comment=NONE
+channel ORA_DISK_1: backup set complete, elapsed time: 00:00:25
+Finished backup at 13-OCT-17
+
+Starting Control File and SPFILE Autobackup at 13-OCT-17
+piece handle=/u01/app/oracle/fast_recovery_area/ORCL/autobackup/2017_10_13/o1_mf_s_957269479_dy0p87or_.bkp comment=NONE
+Finished Control File and SPFILE Autobackup at 13-OCT-17
+
+
+
+[oracle@dbserver1 ~]$ mkdir -p /home/oracle/class_bkp
+
+RMAN> backup database format '/home/oracle/class_bkp/full_db_%d_%U.bkp';
+
+Starting backup at 13-OCT-17
+using channel ORA_DISK_1
+channel ORA_DISK_1: starting full datafile backup set
+channel ORA_DISK_1: specifying datafile(s) in backup set
+input datafile file number=00006 name=/home/oracle/tbs/tbs_tpitr01.dbf
+input datafile file number=00001 name=/u01/app/oracle/oradata/orcl/system01.dbf
+input datafile file number=00002 name=/u01/app/oracle/oradata/orcl/sysaux01.dbf
+input datafile file number=00005 name=/u01/app/oracle/oradata/orcl/example01.dbf
+input datafile file number=00003 name=/u01/app/oracle/oradata/orcl/undotbs01.dbf
+input datafile file number=00004 name=/u01/app/oracle/oradata/orcl/users01.dbf
+channel ORA_DISK_1: starting piece 1 at 13-OCT-17
+channel ORA_DISK_1: finished piece 1 at 13-OCT-17
+piece handle=/home/oracle/class_bkp/full_db_ORCL_0vsgtht6_1_1.bkp tag=TAG20171013T121846 comment=NONE
+channel ORA_DISK_1: backup set complete, elapsed time: 00:00:55
+Finished backup at 13-OCT-17
+
+Starting Control File and SPFILE Autobackup at 13-OCT-17
+piece handle=/u01/app/oracle/fast_recovery_area/ORCL/autobackup/2017_10_13/o1_mf_s_957269981_dy0pqy0l_.bkp comment=NONE
+Finished Control File and SPFILE Autobackup at 13-OCT-17
+
+
+Password Encryption:
+RMAN> SET ENCRYPTION ON IDENTIFIED BY 'rmanpass123' ONLY;
+
+executing command: SET encryption
+
+RMAN> backup datafile 4;
+
+Starting backup at 13-OCT-17
+allocated channel: ORA_DISK_1
+channel ORA_DISK_1: SID=50 device type=DISK
+channel ORA_DISK_1: starting full datafile backup set
+channel ORA_DISK_1: specifying datafile(s) in backup set
+input datafile file number=00004 name=/u01/app/oracle/oradata/orcl/users01.dbf
+channel ORA_DISK_1: starting piece 1 at 13-OCT-17
+channel ORA_DISK_1: finished piece 1 at 13-OCT-17
+piece handle=/u01/app/oracle/fast_recovery_area/ORCL/backupset/2017_10_13/o1_mf_nnndf_TAG20171013T122545_dy0q3b00_.bkp tag=TAG20171013T122545 comment=NONE
+channel ORA_DISK_1: backup set complete, elapsed time: 00:00:02
+Finished backup at 13-OCT-17
+
+Starting Control File and SPFILE Autobackup at 13-OCT-17
+piece handle=/u01/app/oracle/fast_recovery_area/ORCL/autobackup/2017_10_13/o1_mf_s_957270347_dy0q3c9c_.bkp comment=NONE
+Finished Control File and SPFILE Autobackup at 13-OCT-17
+
+RMAN> 
+
+SQL> shu immediate
+Database closed.
+Database dismounted.
+ORACLE instance shut down.
+SQL> exit
+Disconnected from Oracle Database 11g Enterprise Edition Release 11.2.0.3.0 - 64bit Production
+With the Partitioning, OLAP, Data Mining and Real Application Testing options
+[oracle@dbserver1 ~]$ rm -rf /u01/app/oracle/oradata/orcl/users01.dbf 
+[oracle@dbserver1 ~]$ 
+
+SQL> startup
+ORACLE instance started.
+
+Total System Global Area  830930944 bytes
+Fixed Size		    2232920 bytes
+Variable Size		  507514280 bytes
+Database Buffers	  318767104 bytes
+Redo Buffers		    2416640 bytes
+Database mounted.
+ORA-01157: cannot identify/lock data file 4 - see DBWR trace file
+ORA-01110: data file 4: '/u01/app/oracle/oradata/orcl/users01.dbf'
+
+
+RMAN> list backup;
+
+using target database control file instead of recovery catalog
+
+List of Backup Sets
+===================
+
+
+BS Key  Type LV Size       Device Type Elapsed Time Completion Time
+------- ---- -- ---------- ----------- ------------ ---------------
+29      Full    3.29M      DISK        00:00:01     13-OCT-17      
+        BP Key: 29   Status: AVAILABLE  Compressed: NO  Tag: TAG20171013T122545
+        Piece Name: /u01/app/oracle/fast_recovery_area/ORCL/backupset/2017_10_13/o1_mf_nnndf_TAG20171013T122545_dy0q3b00_.bkp
+  List of Datafiles in backup set 29
+  File LV Type Ckp SCN    Ckp Time  Name
+  ---- -- ---- ---------- --------- ----
+  4       Full 1151822    13-OCT-17 /u01/app/oracle/oradata/orcl/users01.dbf
+
+BS Key  Type LV Size       Device Type Elapsed Time Completion Time
+------- ---- -- ---------- ----------- ------------ ---------------
+30      Full    9.36M      DISK        00:00:00     13-OCT-17      
+        BP Key: 30   Status: AVAILABLE  Compressed: NO  Tag: TAG20171013T122547
+        Piece Name: /u01/app/oracle/fast_recovery_area/ORCL/autobackup/2017_10_13/o1_mf_s_957270347_dy0q3c9c_.bkp
+  SPFILE Included: Modification time: 13-OCT-17
+  SPFILE db_unique_name: ORCL
+  Control File Included: Ckp SCN: 1151827      Ckp time: 13-OCT-17
+
+  RMAN> restore datafile 4;
+
+Starting restore at 13-OCT-17
+allocated channel: ORA_DISK_1
+channel ORA_DISK_1: SID=17 device type=DISK
+
+channel ORA_DISK_1: starting datafile backup set restore
+channel ORA_DISK_1: specifying datafile(s) to restore from backup set
+channel ORA_DISK_1: restoring datafile 00004 to /u01/app/oracle/oradata/orcl/users01.dbf
+channel ORA_DISK_1: reading from backup piece /u01/app/oracle/fast_recovery_area/ORCL/backupset/2017_10_13/o1_mf_nnndf_TAG20171013T122545_dy0q3b00_.bkp
+RMAN-00571: ===========================================================
+RMAN-00569: =============== ERROR MESSAGE STACK FOLLOWS ===============
+RMAN-00571: ===========================================================
+RMAN-03002: failure of restore command at 10/13/2017 12:28:12
+ORA-19870: error while restoring backup piece /u01/app/oracle/fast_recovery_area/ORCL/backupset/2017_10_13/o1_mf_nnndf_TAG20171013T122545_dy0q3b00_.bkp
+ORA-19913: unable to decrypt backup
+ORA-28365: wallet is not open
+
+RMAN> 
+
+RMAN> SET DECRYPTION IDENTIFIED BY 'rmanpass123';
+
+executing command: SET decryption
+
+RMAN> restore datafile 4;
+
+Starting restore at 13-OCT-17
+using channel ORA_DISK_1
+
+channel ORA_DISK_1: starting datafile backup set restore
+channel ORA_DISK_1: specifying datafile(s) to restore from backup set
+channel ORA_DISK_1: restoring datafile 00004 to /u01/app/oracle/oradata/orcl/users01.dbf
+channel ORA_DISK_1: reading from backup piece /u01/app/oracle/fast_recovery_area/ORCL/backupset/2017_10_13/o1_mf_nnndf_TAG20171013T122545_dy0q3b00_.bkp
+channel ORA_DISK_1: piece handle=/u01/app/oracle/fast_recovery_area/ORCL/backupset/2017_10_13/o1_mf_nnndf_TAG20171013T122545_dy0q3b00_.bkp tag=TAG20171013T122545
+channel ORA_DISK_1: restored backup piece 1
+channel ORA_DISK_1: restore complete, elapsed time: 00:00:01
+Finished restore at 13-OCT-17
+
+RMAN> recover datafile 4;
+
+Starting recover at 13-OCT-17
+using channel ORA_DISK_1
+
+starting media recovery
+media recovery complete, elapsed time: 00:00:00
+
+Finished recover at 13-OCT-17
+
+RMAN> alter database open;
+
+database opened
+
+
+The binary compression method is the most used RMAN compression method used in Oracle. Use AS COMPRESSED clause 
+in the backup command to compress the backup as follows:
+
+RMAN> BACKUP AS COMPRESSED BACKUPSET DATABASE;
+
+There is no special command to restore database from the compressed backupset. The default compression algorithm is BZIP2,
+however you can change it to the following algorithms using CONFIGURE COMPRESSION ALGORITHM command:
+
+RMAN> CONFIGURE COMPRESSION ALGORITHM 'ZLIB';
+
+To get the list of all available compression algorithms, check V$RMAN_COMPRESSION_ALGORITHM;
+
+RMAN> CONFIGURE MAXSETSIZE to 20M;
+
+new RMAN configuration parameters:
+CONFIGURE MAXSETSIZE TO 20 M;
+new RMAN configuration parameters are successfully stored
+
+RMAN> backup database;
+
+Starting backup at 13-OCT-17
+using channel ORA_DISK_1
+RMAN-00571: ===========================================================
+RMAN-00569: =============== ERROR MESSAGE STACK FOLLOWS ===============
+RMAN-00571: ===========================================================
+RMAN-03002: failure of backup command at 10/13/2017 12:36:28
+RMAN-06183: datafile or datafile copy /home/oracle/tbs/tbs_tpitr01.dbf (file number 6) larger than MAXSETSIZE
+
+RMAN> CONFIGURE MAXSETSIZE to UNLIMITED;
+
+old RMAN configuration parameters:
+CONFIGURE MAXSETSIZE TO 20 M;
+new RMAN configuration parameters:
+CONFIGURE MAXSETSIZE TO UNLIMITED;
+new RMAN configuration parameters are successfully stored
+
+RMAN> 
+
+BACKUP PIECE:
+RMAN> CONFIGURE CHANNEL DEVICE TYPE DISK MAXPIECESIZE 500M;
+
+new RMAN configuration parameters:
+CONFIGURE CHANNEL DEVICE TYPE DISK MAXPIECESIZE 500 M;
+new RMAN configuration parameters are successfully stored
+released channel: ORA_DISK_1
+
+RMAN> backup database;
+
+Starting backup at 13-OCT-17
+allocated channel: ORA_DISK_1
+channel ORA_DISK_1: SID=17 device type=DISK
+channel ORA_DISK_1: starting full datafile backup set
+channel ORA_DISK_1: specifying datafile(s) in backup set
+input datafile file number=00006 name=/home/oracle/tbs/tbs_tpitr01.dbf
+input datafile file number=00001 name=/u01/app/oracle/oradata/orcl/system01.dbf
+input datafile file number=00002 name=/u01/app/oracle/oradata/orcl/sysaux01.dbf
+input datafile file number=00005 name=/u01/app/oracle/oradata/orcl/example01.dbf
+input datafile file number=00003 name=/u01/app/oracle/oradata/orcl/undotbs01.dbf
+input datafile file number=00004 name=/u01/app/oracle/oradata/orcl/users01.dbf
+channel ORA_DISK_1: starting piece 1 at 13-OCT-17
+channel ORA_DISK_1: finished piece 1 at 13-OCT-17
+piece handle=/u01/app/oracle/fast_recovery_area/ORCL/backupset/2017_10_13/o1_mf_nnndf_TAG20171013T123748_dy0qsw7y_.bkp tag=TAG20171013T123748 comment=NONE
+channel ORA_DISK_1: starting piece 2 at 13-OCT-17
+channel ORA_DISK_1: finished piece 2 at 13-OCT-17
+piece handle=/u01/app/oracle/fast_recovery_area/ORCL/backupset/2017_10_13/o1_mf_nnndf_TAG20171013T123748_dy0qtz89_.bkp tag=TAG20171013T123748 comment=NONE
+channel ORA_DISK_1: starting piece 3 at 13-OCT-17
+channel ORA_DISK_1: finished piece 3 at 13-OCT-17
+piece handle=/u01/app/oracle/fast_recovery_area/ORCL/backupset/2017_10_13/o1_mf_nnndf_TAG20171013T123748_dy0qvr9c_.bkp tag=TAG20171013T123748 comment=NONE
+channel ORA_DISK_1: backup set complete, elapsed time: 00:01:07
+Finished backup at 13-OCT-17
+
+Starting Control File and SPFILE Autobackup at 13-OCT-17
+piece handle=/u01/app/oracle/fast_recovery_area/ORCL/autobackup/2017_10_13/o1_mf_s_957271135_dy0qvzl4_.bkp comment=NONE
+Finished Control File and SPFILE Autobackup at 13-OCT-17
+
+RMAN> 
+
+
+DUPLEX BACKUP:
+RMAN> configure datafile backup copies for device type disk to 2;
+
+new RMAN configuration parameters:
+CONFIGURE DATAFILE BACKUP COPIES FOR DEVICE TYPE DISK TO 2;
+new RMAN configuration parameters are successfully stored
+
+RMAN> backup database;
+
+Starting backup at 13-OCT-17
+using channel ORA_DISK_1
+channel ORA_DISK_1: starting full datafile backup set
+channel ORA_DISK_1: specifying datafile(s) in backup set
+input datafile file number=00006 name=/home/oracle/tbs/tbs_tpitr01.dbf
+input datafile file number=00001 name=/u01/app/oracle/oradata/orcl/system01.dbf
+input datafile file number=00002 name=/u01/app/oracle/oradata/orcl/sysaux01.dbf
+input datafile file number=00005 name=/u01/app/oracle/oradata/orcl/example01.dbf
+input datafile file number=00003 name=/u01/app/oracle/oradata/orcl/undotbs01.dbf
+input datafile file number=00004 name=/u01/app/oracle/oradata/orcl/users01.dbf
+channel ORA_DISK_1: starting piece 1 at 13-OCT-17
+RMAN-00571: ===========================================================
+RMAN-00569: =============== ERROR MESSAGE STACK FOLLOWS ===============
+RMAN-00571: ===========================================================
+RMAN-03009: failure of backup command on ORA_DISK_1 channel at 10/13/2017 12:41:45
+ORA-19806: cannot make duplex backups in recovery area
+
+RMAN> 
+
+RMAN> backup database format '/home/oracle/class_bkp/duplex_%U.bkp';
+
+Starting backup at 13-OCT-17
+using channel ORA_DISK_1
+channel ORA_DISK_1: starting full datafile backup set
+channel ORA_DISK_1: specifying datafile(s) in backup set
+input datafile file number=00006 name=/home/oracle/tbs/tbs_tpitr01.dbf
+input datafile file number=00001 name=/u01/app/oracle/oradata/orcl/system01.dbf
+input datafile file number=00002 name=/u01/app/oracle/oradata/orcl/sysaux01.dbf
+input datafile file number=00005 name=/u01/app/oracle/oradata/orcl/example01.dbf
+input datafile file number=00003 name=/u01/app/oracle/oradata/orcl/undotbs01.dbf
+input datafile file number=00004 name=/u01/app/oracle/oradata/orcl/users01.dbf
+channel ORA_DISK_1: starting piece 1 at 13-OCT-17
+channel ORA_DISK_1: finished piece 1 at 13-OCT-17 with 2 copies and tag TAG20171013T124300
+piece handle=/home/oracle/class_bkp/duplex_1asgtjak_1_1.bkp comment=NONE
+piece handle=/home/oracle/class_bkp/duplex_1asgtjak_1_2.bkp comment=NONE
+channel ORA_DISK_1: starting piece 2 at 13-OCT-17
+channel ORA_DISK_1: finished piece 2 at 13-OCT-17 with 2 copies and tag TAG20171013T124300
+piece handle=/home/oracle/class_bkp/duplex_1asgtjak_2_1.bkp comment=NONE
+piece handle=/home/oracle/class_bkp/duplex_1asgtjak_2_2.bkp comment=NONE
+channel ORA_DISK_1: starting piece 3 at 13-OCT-17
+channel ORA_DISK_1: finished piece 3 at 13-OCT-17 with 2 copies and tag TAG20171013T124300
+piece handle=/home/oracle/class_bkp/duplex_1asgtjak_3_1.bkp comment=NONE
+piece handle=/home/oracle/class_bkp/duplex_1asgtjak_3_2.bkp comment=NONE
+channel ORA_DISK_1: backup set complete, elapsed time: 00:01:17
+Finished backup at 13-OCT-17
+
+Starting Control File and SPFILE Autobackup at 13-OCT-17
+piece handle=/u01/app/oracle/fast_recovery_area/ORCL/autobackup/2017_10_13/o1_mf_s_957271457_dy0r61wo_.bkp comment=NONE
+Finished Control File and SPFILE Autobackup at 13-OCT-17
+
+
+EXCLUDE TABLESPACE:
+RMAN> configure exclude for tablespace sysaux;
+
+Tablespace SYSAUX will be excluded from future whole database backups
+new RMAN configuration parameters are successfully stored
+
+
+RMAN> backup database format '/home/oracle/class_bkp/fulldb_%U.bkp';
+
+Starting backup at 13-OCT-17
+using channel ORA_DISK_1
+file 2 is excluded from whole database backup
+channel ORA_DISK_1: starting full datafile backup set
+channel ORA_DISK_1: specifying datafile(s) in backup set
+input datafile file number=00006 name=/home/oracle/tbs/tbs_tpitr01.dbf
+input datafile file number=00001 name=/u01/app/oracle/oradata/orcl/system01.dbf
+input datafile file number=00005 name=/u01/app/oracle/oradata/orcl/example01.dbf
+input datafile file number=00003 name=/u01/app/oracle/oradata/orcl/undotbs01.dbf
+input datafile file number=00004 name=/u01/app/oracle/oradata/orcl/users01.dbf
+channel ORA_DISK_1: starting piece 1 at 13-OCT-17
+channel ORA_DISK_1: finished piece 1 at 13-OCT-17 with 2 copies and tag TAG20171013T124842
+piece handle=/home/oracle/class_bkp/fulldb_1dsgtjla_1_1.bkp comment=NONE
+piece handle=/home/oracle/class_bkp/fulldb_1dsgtjla_1_2.bkp comment=NONE
+channel ORA_DISK_1: starting piece 2 at 13-OCT-17
+channel ORA_DISK_1: finished piece 2 at 13-OCT-17 with 2 copies and tag TAG20171013T124842
+piece handle=/home/oracle/class_bkp/fulldb_1dsgtjla_2_1.bkp comment=NONE
+piece handle=/home/oracle/class_bkp/fulldb_1dsgtjla_2_2.bkp comment=NONE
+channel ORA_DISK_1: backup set complete, elapsed time: 00:00:50
+Finished backup at 13-OCT-17
+
+Starting Control File and SPFILE Autobackup at 13-OCT-17
+piece handle=/u01/app/oracle/fast_recovery_area/ORCL/autobackup/2017_10_13/o1_mf_s_957271772_dy0rhwyy_.bkp comment=NONE
+Finished Control File and SPFILE Autobackup at 13-OCT-17
+
+RMAN> 
+
+override noexlude:
+
+RMAN> backup database noexclude;
+
+
+RMAN> backup as copy current controlfile format '/home/oracle/class_bkp/controlfile_backup.ctl';
+
+
+
+to change auto backup location:
+CONFIGURE CONTROLFILE AUTOBACKUP FORMAT FOR DEVICE TYPE DISK TO '%F';
+
+to go back to default location:
+
+CONFIGURE CONTROLFILE AUTOBACKUP FORMAT FOR DEVICE TYPE DISK CLEAR;
+
+
+
+
+RESTORE CONTROLFILE FROM RMAN:
+###################################
+RESTORE CONTROLFILE WITH RMAN:
+################################
+RMAN> backup current controlfile format '/home/oracle/control_%U.bkp';
+piece handle=/home/oracle/control_3usgj22d_1_1.bkp
+
+RMAN> list backup of controlfile;
+BS Key  Type LV Size       Device Type Elapsed Time Completion Time
+------- ---- -- ---------- ----------- ------------ ---------------
+112     Full    9.61M      DISK        00:00:01     09-OCT-17      
+        BP Key: 133   Status: AVAILABLE  Compressed: NO  Tag: TAG20171009T124709
+        Piece Name: /home/oracle/control_3usgj22d_1_1.bkp
+  Control File Included: Ckp SCN: 1203764      Ckp time: 09-OCT-17
+
+ SQL> select name from v$controlfile;
+
+NAME
+--------------------------------------------------------------------------------
+/u01/app/oracle/oradata/orcl/control01.ctl
+/u01/app/oracle/fast_recovery_area/orcl/control02.ctl
+  
+SQL> shu immediate
+
+[oracle@dbserver1 ~]$ rm -rf /u01/app/oracle/oradata/orcl/control01.ctl
+[oracle@dbserver1 ~]$ rm -rf /u01/app/oracle/fast_recovery_area/orcl/control02.ctl
+
+SQL> startup
+ORACLE instance started.
+
+Total System Global Area  830930944 bytes
+Fixed Size		    2232920 bytes
+Variable Size		  503319976 bytes
+Database Buffers	  322961408 bytes
+Redo Buffers		    2416640 bytes
+ORA-00205: error in identifying control file, check alert log for more info
+
+RMAN> restore controlfile from '/home/oracle/control_3usgj22d_1_1.bkp';
+RMAN> alter database mount;
+RMAN> recover database;
+RMAN> alter database open resetlogs;
+
+
+RESTORE PARAMETER FILE:
+#######################
+Oracle database cannot be started without parameter file. This occurs since parameter file is read by Oracle in first place during the startup.
+
+If you lost the parameter file, restore it from RMAN. If you don't have RMAN backup of spfile, refer to alert.log file to get the list of all non-default 
+parameter that are logged during startup of the database.
+
+RMAN> backup spfile format '/home/oracle/spfile%U.bkp';
+piece handle=/home/oracle/spfile3isgisb5_1_1.bkp tag=TAG20171009T110925 comment=NONE
+
+SQL> shu immediate 
+Database closed.
+Database dismounted.
+ORACLE instance shut down.
+
+[oracle@dbserver1 Desktop]$ cd /u01/app/oracle/product/11.2.0/db_1/dbs/
+[oracle@dbserver1 dbs]$ ls
+hc_manual.dat  hc_orcl.dat  hc_orcldb.dat  lkDUMMY  lkORCL  orapworcl  snapcf_orcl.f  spfileorcl.ora
+[oracle@dbserver1 dbs]$ rm -rf spfileorcl.ora
+
+SQL> startup
+ORA-01078: failure in processing system parameters
+LRM-00109: could not open parameter file '/u01/app/oracle/product/11.2.0/db_1/dbs/initorcl.ora'
+
+
+RMAN> startup nomount
+
+startup failed: ORA-01078: failure in processing system parameters
+LRM-00109: could not open parameter file '/u01/app/oracle/product/11.2.0/db_1/dbs/initorcl.ora'
+
+starting Oracle instance without parameter file for retrieval of spfile
+Oracle instance started
+
+Total System Global Area     158662656 bytes
+
+Fixed Size                     2226456 bytes
+Variable Size                 92276456 bytes
+Database Buffers              58720256 bytes
+Redo Buffers                   5439488 bytes
+
+RMAN> restore spfile from '/home/oracle/spfile3isgisb5_1_1.bkp';
+
+Starting restore at 09-OCT-17
+using target database control file instead of recovery catalog
+allocated channel: ORA_DISK_1
+channel ORA_DISK_1: SID=19 device type=DISK
+
+channel ORA_DISK_1: restoring spfile from AUTOBACKUP /home/oracle/spfile3isgisb5_1_1.bkp
+channel ORA_DISK_1: SPFILE restore from AUTOBACKUP complete
+Finished restore at 09-OCT-17
+
+[oracle@dbserver1 ~]$ sqlplus / as sysdba
+
+SQL*Plus: Release 11.2.0.3.0 Production on Mon Oct 9 11:50:02 2017
+
+Copyright (c) 1982, 2011, Oracle.  All rights reserved.
+
+
+Connected to:
+Oracle Database 11g Enterprise Edition Release 11.2.0.3.0 - 64bit Production
+With the Partitioning, OLAP, Data Mining and Real Application Testing options
+
+SQL> shu immediate
+ORA-01507: database not mounted
+
+
+ORACLE instance shut down.
+SQL> startup
+ORACLE instance started.
+
+Total System Global Area  830930944 bytes
+Fixed Size		    2232920 bytes
+Variable Size		  503319976 bytes
+Database Buffers	  322961408 bytes
+Redo Buffers		    2416640 bytes
+Database mounted.
+Database opened.
+SQL> 
+
+
+
+
+
+
+
+
+
+
+

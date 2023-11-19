@@ -1,0 +1,343 @@
+USING SET NEWNAME COMMAND TO CHANGE LOCATION OF THE REESTORE DATAFILE:
+###########################################################################
+RMAN> backup database;
+RMAN> list backup of datafile 4;
+
+SQL> select file_name,online_status from dba_data_files where file_id=4;
+
+FILE_NAME							    ONLINE_
+------------------------------------------------------------------- -------
+/u01/app/oracle/oradata/orcl/users01.dbf			    ONLINE
+
+SQL> shu immediate
+
+[oracle@dbserver1 ~]$ rm -rf /u01/app/oracle/oradata/orcl/users01.dbf
+
+SQL> startup
+ORACLE instance started.
+
+Total System Global Area  830930944 bytes
+Fixed Size		    2232920 bytes
+Variable Size		  507514280 bytes
+Database Buffers	  318767104 bytes
+Redo Buffers		    2416640 bytes
+Database mounted.
+ORA-01157: cannot identify/lock data file 4 - see DBWR trace file
+ORA-01110: data file 4: '/u01/app/oracle/oradata/orcl/ms_ts01.dbf'
+
+RMAN> run{
+                          set newname for datafile 4 to '/u02/app/oracle/oradata/orcl/users01.dbf';
+                          restore datafile 4;
+                          switch datafile all;
+                       }
+
+RMAN> recover datafile 4;
+
+Starting recover at 09-OCT-17
+using channel ORA_DISK_1
+
+starting media recovery
+media recovery complete, elapsed time: 00:00:00
+
+Finished recover at 09-OCT-17
+
+RMAN> alter database open;
+
+database opened
+
+SQL> select file_name from dba_data_files where file_id=11;
+
+FILE_NAME
+--------------------------------------------------------------------------------
+/home/oracle/ms_ts01.dbf
+
+#############################################
+restore tablespace with new location of datafiles.
+#############################################
+
+SQL> create tablespace dbabd_ts datafile '/u01/app/oracle/oradata/orcl/dbabd01.dbf' size 1g autoextend on next 1g maxsize 30g;
+
+Tablespace created.
+
+SQL> alter tablespace dbabd_ts add datafile '/u01/app/oracle/oradata/orcl/dbabd02.dbf' size 1g autoextend on next 1g maxsize 30g;
+
+Tablespace altered.
+
+SQL> alter tablespace dbabd_ts add datafile '/u01/app/oracle/oradata/orcl/dbabd03.dbf' size 1g autoextend on next 1g maxsize 30g;
+
+Tablespace altered.
+
+SQL> select file_name from dba_data_files where tablespace_name='DBABD_TS';
+
+FILE_NAME
+--------------------------------------------------------------------------------
+/u01/app/oracle/oradata/orcl/dbabd01.dbf
+/u01/app/oracle/oradata/orcl/dbabd02.dbf
+/u01/app/oracle/oradata/orcl/dbabd03.dbf
+
+SQL> 
+----------------------------------------------
+RMAN> backup database;
+
+Starting backup at 10-NOV-17
+using channel ORA_DISK_1
+ 
+
+SQL> shu immediate
+
+[oracle@dbserver1 ~]$ cd /u01/app/oracle/oradata/orcl/
+[oracle@dbserver1 orcl]$ ls
+[oracle@dbserver1 orcl]$ ls
+control01.ctl  dbabd01.dbf  dbabd02.dbf  dbabd03.dbf  example01.dbf  redo01.log  redo02.log  redo03.log  sysaux01.dbf  system01.dbf  temp01.dbf  undotbs01.dbf
+[oracle@dbserver1 orcl]$ rm -rf dbabd0*
+[oracle@dbserver1 orcl]$ 
+
+
+[oracle@dbserver1 orcl]$ rm -rf max_ts0*
+[oracle@dbserver1 orcl]$ 
+SQL> startup
+ORACLE instance started.
+
+Total System Global Area  830930944 bytes
+Fixed Size		    2232920 bytes
+Variable Size		  507514280 bytes
+Database Buffers	  318767104 bytes
+Redo Buffers		    2416640 bytes
+Database mounted.
+ORA-01157: cannot identify/lock data file 7 - see DBWR trace file
+ORA-01110: data file 7: '/u01/app/oracle/oradata/orcl/dbabd_ts01.dbf'
+
+
+
+
+[oracle@dbserver1 orcl]$ rman target /
+
+Recovery Manager: Release 11.2.0.3.0 - Production on Fri Nov 10 12:00:53 2017
+
+Copyright (c) 1982, 2011, Oracle and/or its affiliates.  All rights reserved.
+
+connected to target database: ORCL (DBID=1485136934, not open)
+
+RMAN> list backup of tablespace dbabd_ts;
+
+using target database control file instead of recovery catalog
+
+List of Backup Sets
+===================
+
+
+BS Key  Type LV Size       Device Type Elapsed Time Completion Time
+------- ---- -- ---------- ----------- ------------ ---------------
+7       Full    1.06G      DISK        00:01:00     10-NOV-17      
+        BP Key: 7   Status: AVAILABLE  Compressed: NO  Tag: TAG20171110T115826
+        Piece Name: /u01/app/oracle/fast_recovery_area/ORCL/backupset/2017_11_10/o1_mf_nnndf_TAG20171110T115826_f0bj02kn_.bkp
+  List of Datafiles in backup set 7
+  File LV Type Ckp SCN    Ckp Time  Name
+  ---- -- ---- ---------- --------- ----
+  6       Full 1197443    10-NOV-17 /u01/app/oracle/oradata/orcl/dbabd01.dbf
+  7       Full 1197443    10-NOV-17 /u01/app/oracle/oradata/orcl/dbabd02.dbf
+  8       Full 1197443    10-NOV-17 /u01/app/oracle/oradata/orcl/dbabd03.dbf
+
+RMAN> 
+
+
+ RMAN> run{ 
+                           set newname for tablespace dbabd_ts to '/u02/app/oracle/oradata/orcl/%N_%f.dbf';
+			               restore tablespace dbabd_ts;
+			               switch datafile all;
+                           recover tablespace dbabd_ts;			
+		                }
+						
+RMAN> alter database open;
+
+database opened
+
+SQL> select file_name from dba_data_files where tablespace_name='DBABD_TS';
+
+FILE_NAME
+--------------------------------------------------------------------------------
+/u01/app/oracle/oradata/orcl/dbabd01.dbf
+/u01/app/oracle/oradata/orcl/dbabd02.dbf
+/u01/app/oracle/oradata/orcl/dbabd03.dbf
+
+
+
+######################################
+
+
+######################################
+
+PERFORM BLOCK MEDIA RECOVERY:
+###############################
+
+There is no need to restore and recover the whole datafile or database if you have a block corruption. By running BLOCKRECOVER 
+command, RMAN restore and recovers specified block from the backup in a seconds. In the following example, we corrupt a header 
+block of the table and recover it using BLOCKRECOVER command.
+    
+          Create a new tablespace and a table , insert rows and get the header block of the table:
+
+SQL> create tablespace tbs_crpt datafile '/home/oracle/tbs_crpt01.dbf' size 2g autoextend on next 2g maxsize 30g;
+
+Tablespace created.
+
+SQL> select file_id from dba_data_files where tablespace_name='TBS_CRPT';
+
+   FILE_ID
+----------
+	12
+
+
+SQL> create user crpt identified by crpt default tablespace tbs_crpt;
+
+User created.
+
+SQL> grant dba to crpt;
+
+Grant succeeded.
+
+SQL> conn crpt/crpt
+Connected.
+SQL> create table m1(id number,name varchar2(100)) tablespace tbs_crpt;
+
+Table created.
+
+SQL> begin
+     for i in 1..100000 loop
+     insert into m1
+     values(i,'CRPT');
+     end loop;
+     commit;
+     end;
+     /
+
+PL/SQL procedure successfully completed.
+
+SQL> select header_block from dba_segments where segment_name='M1';
+
+HEADER_BLOCK
+------------
+	 130
+		  
+
+Backup the datafile of TBS_CRPT tablespace:
+ 
+RMAN> backup datafile 12;
+piece handle=/u01/app/oracle/fast_recovery_area/ORCL/backupset/4esglj86_1_1.bkp
+
+Next use dd command in Linux and provide a datafile name as an output parameter , provide header block number 
+and corrupt the datafile:
+
+[oracle@dbserver1 ~]$ dd if=/dev/zero of=/home/oracle/tbs_crpt01.dbf bs=8192 seek=132 conv=notrunc count=1
+1+0 records in
+1+0 records out
+8192 bytes (8.2 kB) copied, 0.000618918 s, 13.2 MB/s
+[oracle@dbserver1 ~]$ 
+
+SQL> alter system flush buffer_cache;
+
+System altered.
+
+SQL> conn crpt/crpt
+Connected.
+SQL> select count(*) from m1;
+select count(*) from m1
+                     *
+ERROR at line 1:
+ORA-01578: ORACLE data block corrupted (file # 12, block # 132)
+ORA-01110: data file 12: '/home/oracle/tbs_crpt01.dbf'
+
+SQL>
+
+RMAN> BLOCKRECOVER DATAFILE 12 BLOCK 132;   
+
+SQL> select count(*) from m1;
+
+  COUNT(*)
+----------
+    100000
+
+
+SQL> select * from v$database_block_corruption;
+
+no rows selected
+
+
+Whenever you get a corruption in the database , make sure to check v$database_block_corruption view to get more 
+detailed information about the corrupted datafiles and the data blocks. If you have a lot of corrupted blocks and you 
+want to recover them all in one shot , then run the following command:
+
+RMAN> BLOCKRECOVER CORRUPTION LIST;
+
+
+
+################################################
+
+
+################################################
+
+PERFORM INCOMPLETE RECOVERY (TIME,SCN AND CHANGED BASED):
+############################################################
+During the exam, you might be asked to recover the database back to me the specific point based on Time, SCN, or sequence number
+This type of recovery is called incomplete recovery. To perform an incomplete recovery UNTIL [SCN{TIME,SEQUENCE,CANCEL}] clauses
+are used.
+
+In the following eample, we backup the database , create a table with some data, fix the date/time(or SCN) and truncate the table. Then
+we perform an incomplete recovery by using either date/time or SCN value and get the truncated table back.
+
+RMAN> backup database plus archivelog delete input format '/home/oracle/backup/full_arch_%U.bkp';
+
+SQL> create table tbl_inc_reco as select * from dba_objects;
+
+Table created.
+
+SQL> select count(*) from tbl_inc_reco;
+
+  COUNT(*)
+----------
+     75203
+
+SQL> select to_char(current_scn) from v$database;
+
+TO_CHAR(CURRENT_SCN)
+----------------------------------------
+1103929
+
+SQL> select scn_to_timestamp(1103929) from dual;
+
+SCN_TO_TIMESTAMP(1103929)
+---------------------------------------------------------------------------
+11-OCT-17 12.07.24.000000000 PM
+
+
+SQL> truncate table tbl_inc_reco;
+
+Table truncated.
+
+SQL> select count(*) from tbl_inc_reco;
+
+  COUNT(*)
+----------
+	 0
+
+SQL> 
+
+SQL> shu immediate
+SQL> startup mount
+
+RMAN> run{
+                         set until scn 1103929;
+                         restore database;
+                         recover database;
+                       }
+					   
+RMAN> ALTER DATABASE OPEN RESETLOGS;
+
+database opened
+
+SQL> select count(*) from tbl_inc_reco;
+
+  COUNT(*)
+----------
+     75203
+
+

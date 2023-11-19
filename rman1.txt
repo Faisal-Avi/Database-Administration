@@ -1,0 +1,666 @@
+[oracle@dbserver1 ~]$ sqlplus / as sysdba
+
+SQL*Plus: Release 11.2.0.3.0 Production on Fri Oct 6 11:12:19 2017
+
+Copyright (c) 1982, 2011, Oracle.  All rights reserved.
+
+
+Connected to:
+Oracle Database 11g Enterprise Edition Release 11.2.0.3.0 - 64bit Production
+With the Partitioning, OLAP, Data Mining and Real Application Testing options
+
+SQL> select open_mode from v$database;
+
+OPEN_MODE
+--------------------
+READ WRITE
+
+SQL> select log_mode from v$database;
+
+LOG_MODE
+------------
+ARCHIVELOG
+
+SQL> show parameter flashback
+
+NAME				     TYPE	 VALUE
+------------------------------------ ----------- ------------------------------
+db_flashback_retention_target	     integer	 1440
+SQL> create user t identified by t;
+
+User created.
+
+SQL> grant dba to t;
+
+Grant succeeded.
+
+SQL> conn t/t
+Connected.
+SQL> create table t1(id number,name varchar2(100));
+
+Table created.
+
+SQL> insert into t1 values(1,'ID');
+
+1 row created.
+
+SQL> commit;
+
+Commit complete.
+
+SQL> drop table t1;
+
+Table dropped.
+
+SQL> select tname from tab;
+
+TNAME
+------------------------------
+BIN$WtsMQhiyE8rgUwoAqMAZ2Q==$0
+
+SQL> flashback table t1 to before drop;
+
+Flashback complete.
+
+SQL> select * from t1;
+
+	ID
+----------
+NAME
+--------------------------------------------------------------------------------
+	 1
+ID
+
+
+SQL> drop table t1;
+
+Table dropped.
+
+SQL> select tname from tab;
+
+TNAME
+------------------------------
+BIN$WtsMQhizE8rgUwoAqMAZ2Q==$0
+
+SQL> purge recyclebin;
+
+Recyclebin purged.
+
+SQL> select tname from tab;
+
+no rows selected
+
+SQL> exit
+Disconnected from Oracle Database 11g Enterprise Edition Release 11.2.0.3.0 - 64bit Production
+With the Partitioning, OLAP, Data Mining and Real Application Testing options
+[oracle@dbserver1 ~]$ sqlplus / as sysdba
+
+SQL*Plus: Release 11.2.0.3.0 Production on Fri Oct 6 11:26:58 2017
+
+Copyright (c) 1982, 2011, Oracle.  All rights reserved.
+
+
+Connected to:
+Oracle Database 11g Enterprise Edition Release 11.2.0.3.0 - 64bit Production
+With the Partitioning, OLAP, Data Mining and Real Application Testing options
+
+SQL> select flashback_on from v$database;
+
+FLASHBACK_ON
+------------------
+NO
+
+SQL> alter database flashback on;
+
+Database altered.
+
+SQL> select flashback_on from v$database;
+
+FLASHBACK_ON
+------------------
+YES
+
+SQL> exit
+Disconnected from Oracle Database 11g Enterprise Edition Release 11.2.0.3.0 - 64bit Production
+With the Partitioning, OLAP, Data Mining and Real Application Testing options
+[oracle@dbserver1 ~]$ sqlplus / as sysdba
+
+SQL*Plus: Release 11.2.0.3.0 Production on Fri Oct 6 11:29:07 2017
+
+Copyright (c) 1982, 2011, Oracle.  All rights reserved.
+
+
+Connected to:
+Oracle Database 11g Enterprise Edition Release 11.2.0.3.0 - 64bit Production
+With the Partitioning, OLAP, Data Mining and Real Application Testing options
+
+SQL> conn t/t
+Connected.
+SQL> create table t2(id number);
+
+Table created.
+
+SQL> drop table t2;
+
+Table dropped.
+
+SQL> select tname from tab;
+
+TNAME
+------------------------------
+BIN$WtsgHAxFE/ngUwoAqMBUxw==$0
+
+SQL> SELECT object_name, original_name FROM dba_recyclebin;
+
+OBJECT_NAME		       ORIGINAL_NAME
+------------------------------ --------------------------------
+BIN$WtsgHAxFE/ngUwoAqMBUxw==$0 T2
+
+SQL> 
+
+
+
+SQL> alter system set recyclebin=off deferred;
+
+System altered.
+
+SQL> create table m(id number);
+
+Table created.
+
+SQL> drop table m;
+
+Table dropped.
+
+SQL> select tname from tab;
+
+no rows selected
+
+SQL> show parameter db_recovery
+
+NAME				     TYPE	 VALUE
+------------------------------------ ----------- ------------------------------
+db_recovery_file_dest		     string	 /u01/app/oracle/fast_recovery_
+						 area
+db_recovery_file_dest_size	     big integer 4122M
+SQL> alter system set db_recovery_file_dest_size=400g;
+
+System altered.
+
+SQL> show parameter db_recovery
+
+NAME				     TYPE	 VALUE
+------------------------------------ ----------- ------------------------------
+db_recovery_file_dest		     string	 /u01/app/oracle/fast_recovery_
+						 area
+db_recovery_file_dest_size	     big integer 400G
+SQL> 
+
+
+[oracle@dbserver1 archivelog]$ cd 2017_10_06
+[oracle@dbserver1 2017_10_06]$ ls
+o1_mf_1_11_dxftlcd3_.arc  o1_mf_1_12_dxg2j03j_.arc  o1_mf_1_5_dxg69mz6_.arc
+[oracle@dbserver1 2017_10_06]$ sqlplus / as sysdba
+
+SQL*Plus: Release 11.2.0.3.0 Production on Fri Oct 6 11:48:58 2017
+
+Copyright (c) 1982, 2011, Oracle.  All rights reserved.
+
+
+Connected to:
+Oracle Database 11g Enterprise Edition Release 11.2.0.3.0 - 64bit Production
+With the Partitioning, OLAP, Data Mining and Real Application Testing options
+
+SQL> alter system switch logfile;
+
+System altered.
+
+SQL> exit
+Disconnected from Oracle Database 11g Enterprise Edition Release 11.2.0.3.0 - 64bit Production
+With the Partitioning, OLAP, Data Mining and Real Application Testing options
+[oracle@dbserver1 2017_10_06]$ ls
+o1_mf_1_11_dxftlcd3_.arc  o1_mf_1_12_dxg2j03j_.arc  o1_mf_1_5_dxg69mz6_.arc  o1_mf_1_6_dxg6bklh_.arc
+[oracle@dbserver1 2017_10_06]$ sqlplus / as sysdba
+
+SQL*Plus: Release 11.2.0.3.0 Production on Fri Oct 6 11:49:13 2017
+
+Copyright (c) 1982, 2011, Oracle.  All rights reserved.
+
+
+Connected to:
+Oracle Database 11g Enterprise Edition Release 11.2.0.3.0 - 64bit Production
+With the Partitioning, OLAP, Data Mining and Real Application Testing options
+
+SQL> alter system switch logfile;
+
+System altered.
+
+SQL> !ls
+o1_mf_1_11_dxftlcd3_.arc  o1_mf_1_12_dxg2j03j_.arc  o1_mf_1_5_dxg69mz6_.arc  o1_mf_1_6_dxg6bklh_.arc  o1_mf_1_7_dxg6bzmb_.arc
+
+SQL> !clear
+
+
+SQL> 
+
+
+RMAN> delete archivelog all;
+
+using target database control file instead of recovery catalog
+allocated channel: ORA_DISK_1
+channel ORA_DISK_1: SID=39 device type=DISK
+List of Archived Log Copies for database with db_unique_name ORCL
+=====================================================================
+
+Key     Thrd Seq     S Low Time 
+------- ---- ------- - ---------
+1       1    5       A 06-OCT-17
+        Name: /u01/app/oracle/fast_recovery_area/ORCL/archivelog/2017_10_06/o1_mf_1_5_dxg69mz6_.arc
+
+2       1    6       A 06-OCT-17
+        Name: /u01/app/oracle/fast_recovery_area/ORCL/archivelog/2017_10_06/o1_mf_1_6_dxg6bklh_.arc
+
+3       1    7       A 06-OCT-17
+        Name: /u01/app/oracle/fast_recovery_area/ORCL/archivelog/2017_10_06/o1_mf_1_7_dxg6bzmb_.arc
+
+4       1    8       A 06-OCT-17
+        Name: /u01/app/oracle/fast_recovery_area/ORCL/archivelog/2017_10_06/o1_mf_1_8_dxg6jglr_.arc
+
+
+Do you really want to delete the above objects (enter YES or NO)? YES
+deleted archived log
+archived log file name=/u01/app/oracle/fast_recovery_area/ORCL/archivelog/2017_10_06/o1_mf_1_5_dxg69mz6_.arc RECID=1 STAMP=956663316
+deleted archived log
+archived log file name=/u01/app/oracle/fast_recovery_area/ORCL/archivelog/2017_10_06/o1_mf_1_6_dxg6bklh_.arc RECID=2 STAMP=956663345
+deleted archived log
+archived log file name=/u01/app/oracle/fast_recovery_area/ORCL/archivelog/2017_10_06/o1_mf_1_7_dxg6bzmb_.arc RECID=3 STAMP=956663359
+deleted archived log
+archived log file name=/u01/app/oracle/fast_recovery_area/ORCL/archivelog/2017_10_06/o1_mf_1_8_dxg6jglr_.arc RECID=4 STAMP=956663534
+Deleted 4 objects
+
+
+RMAN> delete noprompt archivelog all completed before 'sysdate-7';
+
+released channel: ORA_DISK_1
+allocated channel: ORA_DISK_1
+channel ORA_DISK_1: SID=39 device type=DISK
+specification does not match any archived log in the repository
+
+RMAN> 
+
+
+[oracle@dbserver1 ~]$ sqlplus / as sysdba
+
+SQL*Plus: Release 11.2.0.3.0 Production on Fri Oct 6 11:55:49 2017
+
+Copyright (c) 1982, 2011, Oracle.  All rights reserved.
+
+
+Connected to:
+Oracle Database 11g Enterprise Edition Release 11.2.0.3.0 - 64bit Production
+With the Partitioning, OLAP, Data Mining and Real Application Testing options
+
+SQL> select to_char(sysdate-7) from dual;
+
+TO_CHAR(SYSDATE-7)
+------------------
+29-SEP-17
+
+SQL> 
+
+RMAN> list backup;
+
+using target database control file instead of recovery catalog
+specification does not match any backup in the repository
+
+RMAN> backup database;
+
+Starting backup at 06-OCT-17
+allocated channel: ORA_DISK_1
+channel ORA_DISK_1: SID=34 device type=DISK
+channel ORA_DISK_1: starting full datafile backup set
+channel ORA_DISK_1: specifying datafile(s) in backup set
+input datafile file number=00001 name=/u01/app/oracle/oradata/orcl/system01.dbf
+input datafile file number=00002 name=/u01/app/oracle/oradata/orcl/sysaux01.dbf
+input datafile file number=00005 name=/u01/app/oracle/oradata/orcl/example01.dbf
+input datafile file number=00003 name=/u01/app/oracle/oradata/orcl/undotbs01.dbf
+input datafile file number=00004 name=/u01/app/oracle/oradata/orcl/users01.dbf
+channel ORA_DISK_1: starting piece 1 at 06-OCT-17
+channel ORA_DISK_1: finished piece 1 at 06-OCT-17
+piece handle=/u01/app/oracle/fast_recovery_area/ORCL/backupset/2017_10_06/o1_mf_nnndf_TAG20171006T121824_dxg81kbz_.bkp tag=TAG20171006T121824 comment=NONE
+channel ORA_DISK_1: backup set complete, elapsed time: 00:00:55
+channel ORA_DISK_1: starting full datafile backup set
+channel ORA_DISK_1: specifying datafile(s) in backup set
+including current control file in backup set
+including current SPFILE in backup set
+channel ORA_DISK_1: starting piece 1 at 06-OCT-17
+channel ORA_DISK_1: finished piece 1 at 06-OCT-17
+piece handle=/u01/app/oracle/fast_recovery_area/ORCL/backupset/2017_10_06/o1_mf_ncsnf_TAG20171006T121824_dxg839nq_.bkp tag=TAG20171006T121824 comment=NONE
+channel ORA_DISK_1: backup set complete, elapsed time: 00:00:01
+Finished backup at 06-OCT-17
+
+RMAN> list backup;
+
+
+List of Backup Sets
+===================
+
+
+BS Key  Type LV Size       Device Type Elapsed Time Completion Time
+------- ---- -- ---------- ----------- ------------ ---------------
+1       Full    1.05G      DISK        00:00:54     06-OCT-17      
+        BP Key: 1   Status: AVAILABLE  Compressed: NO  Tag: TAG20171006T121824
+        Piece Name: /u01/app/oracle/fast_recovery_area/ORCL/backupset/2017_10_06/o1_mf_nnndf_TAG20171006T121824_dxg81kbz_.bkp
+  List of Datafiles in backup set 1
+  File LV Type Ckp SCN    Ckp Time  Name
+  ---- -- ---- ---------- --------- ----
+  1       Full 1074549    06-OCT-17 /u01/app/oracle/oradata/orcl/system01.dbf
+  2       Full 1074549    06-OCT-17 /u01/app/oracle/oradata/orcl/sysaux01.dbf
+  3       Full 1074549    06-OCT-17 /u01/app/oracle/oradata/orcl/undotbs01.dbf
+  4       Full 1074549    06-OCT-17 /u01/app/oracle/oradata/orcl/users01.dbf
+  5       Full 1074549    06-OCT-17 /u01/app/oracle/oradata/orcl/example01.dbf
+
+BS Key  Type LV Size       Device Type Elapsed Time Completion Time
+------- ---- -- ---------- ----------- ------------ ---------------
+2       Full    9.36M      DISK        00:00:01     06-OCT-17      
+        BP Key: 2   Status: AVAILABLE  Compressed: NO  Tag: TAG20171006T121824
+        Piece Name: /u01/app/oracle/fast_recovery_area/ORCL/backupset/2017_10_06/o1_mf_ncsnf_TAG20171006T121824_dxg839nq_.bkp
+  SPFILE Included: Modification time: 06-OCT-17
+  SPFILE db_unique_name: ORCL
+  Control File Included: Ckp SCN: 1074568      Ckp time: 06-OCT-17
+
+RMAN> 
+
+
+RMAN> backup database tag Full_DB_arafat;
+
+Starting backup at 06-OCT-17
+using channel ORA_DISK_1
+channel ORA_DISK_1: starting full datafile backup set
+channel ORA_DISK_1: specifying datafile(s) in backup set
+input datafile file number=00001 name=/u01/app/oracle/oradata/orcl/system01.dbf
+input datafile file number=00002 name=/u01/app/oracle/oradata/orcl/sysaux01.dbf
+input datafile file number=00005 name=/u01/app/oracle/oradata/orcl/example01.dbf
+input datafile file number=00003 name=/u01/app/oracle/oradata/orcl/undotbs01.dbf
+input datafile file number=00004 name=/u01/app/oracle/oradata/orcl/users01.dbf
+channel ORA_DISK_1: starting piece 1 at 06-OCT-17
+channel ORA_DISK_1: finished piece 1 at 06-OCT-17
+piece handle=/u01/app/oracle/fast_recovery_area/ORCL/backupset/2017_10_06/o1_mf_nnndf_FULL_DB_ARAFAT_dxg87tdk_.bkp tag=FULL_DB_ARAFAT comment=NONE
+channel ORA_DISK_1: backup set complete, elapsed time: 00:01:05
+channel ORA_DISK_1: starting full datafile backup set
+channel ORA_DISK_1: specifying datafile(s) in backup set
+including current control file in backup set
+including current SPFILE in backup set
+channel ORA_DISK_1: starting piece 1 at 06-OCT-17
+channel ORA_DISK_1: finished piece 1 at 06-OCT-17
+piece handle=/u01/app/oracle/fast_recovery_area/ORCL/backupset/2017_10_06/o1_mf_ncsnf_FULL_DB_ARAFAT_dxg89wlr_.bkp tag=FULL_DB_ARAFAT comment=NONE
+channel ORA_DISK_1: backup set complete, elapsed time: 00:00:01
+Finished backup at 06-OCT-17
+
+
+
+
+
+[oracle@dbserver1 2017_10_06]$ ls
+o1_mf_ncsnf_FULL_DB_ARAFAT_dxg89wlr_.bkp      o1_mf_nnndf_FULL_DB_ARAFAT_dxg87tdk_.bkp      o1_mf_nnndf_TAG20171006T121824_dxg81kbz_.bkp
+o1_mf_ncsnf_TAG20171006T121824_dxg839nq_.bkp  o1_mf_nnndf_TAG20171006T083218_dxftsm1g_.bkp
+[oracle@dbserver1 2017_10_06]$ du -sh *
+9.4M	o1_mf_ncsnf_FULL_DB_ARAFAT_dxg89wlr_.bkp
+9.4M	o1_mf_ncsnf_TAG20171006T121824_dxg839nq_.bkp
+1.1G	o1_mf_nnndf_FULL_DB_ARAFAT_dxg87tdk_.bkp
+3.3M	o1_mf_nnndf_TAG20171006T083218_dxftsm1g_.bkp
+1.1G	o1_mf_nnndf_TAG20171006T121824_dxg81kbz_.bkp
+
+RMAN> delete backup;
+
+using channel ORA_DISK_1
+
+List of Backup Pieces
+BP Key  BS Key  Pc# Cp# Status      Device Type Piece Name
+------- ------- --- --- ----------- ----------- ----------
+1       1       1   1   AVAILABLE   DISK        /u01/app/oracle/fast_recovery_area/ORCL/backupset/2017_10_06/o1_mf_nnndf_TAG20171006T121824_dxg81kbz_.bkp
+2       2       1   1   AVAILABLE   DISK        /u01/app/oracle/fast_recovery_area/ORCL/backupset/2017_10_06/o1_mf_ncsnf_TAG20171006T121824_dxg839nq_.bkp
+3       3       1   1   AVAILABLE   DISK        /u01/app/oracle/fast_recovery_area/ORCL/backupset/2017_10_06/o1_mf_nnndf_FULL_DB_ARAFAT_dxg87tdk_.bkp
+4       4       1   1   AVAILABLE   DISK        /u01/app/oracle/fast_recovery_area/ORCL/backupset/2017_10_06/o1_mf_ncsnf_FULL_DB_ARAFAT_dxg89wlr_.bkp
+
+Do you really want to delete the above objects (enter YES or NO)? YES
+deleted backup piece
+backup piece handle=/u01/app/oracle/fast_recovery_area/ORCL/backupset/2017_10_06/o1_mf_nnndf_TAG20171006T121824_dxg81kbz_.bkp RECID=1 STAMP=956665105
+deleted backup piece
+backup piece handle=/u01/app/oracle/fast_recovery_area/ORCL/backupset/2017_10_06/o1_mf_ncsnf_TAG20171006T121824_dxg839nq_.bkp RECID=2 STAMP=956665161
+deleted backup piece
+backup piece handle=/u01/app/oracle/fast_recovery_area/ORCL/backupset/2017_10_06/o1_mf_nnndf_FULL_DB_ARAFAT_dxg87tdk_.bkp RECID=3 STAMP=956665306
+deleted backup piece
+backup piece handle=/u01/app/oracle/fast_recovery_area/ORCL/backupset/2017_10_06/o1_mf_ncsnf_FULL_DB_ARAFAT_dxg89wlr_.bkp RECID=4 STAMP=956665372
+Deleted 4 objects
+
+
+
+
+RMAN> show all;
+
+RMAN configuration parameters for database with db_unique_name ORCL are:
+CONFIGURE RETENTION POLICY TO REDUNDANCY 1; # default
+CONFIGURE BACKUP OPTIMIZATION OFF; # default
+CONFIGURE DEFAULT DEVICE TYPE TO DISK; # default
+CONFIGURE CONTROLFILE AUTOBACKUP OFF; # default
+CONFIGURE CONTROLFILE AUTOBACKUP FORMAT FOR DEVICE TYPE DISK TO '%F'; # default
+CONFIGURE DEVICE TYPE DISK PARALLELISM 1 BACKUP TYPE TO BACKUPSET; # default
+CONFIGURE DATAFILE BACKUP COPIES FOR DEVICE TYPE DISK TO 1; # default
+CONFIGURE ARCHIVELOG BACKUP COPIES FOR DEVICE TYPE DISK TO 1; # default
+CONFIGURE MAXSETSIZE TO UNLIMITED; # default
+CONFIGURE ENCRYPTION FOR DATABASE OFF; # default
+CONFIGURE ENCRYPTION ALGORITHM 'AES128'; # default
+CONFIGURE COMPRESSION ALGORITHM 'BASIC' AS OF RELEASE 'DEFAULT' OPTIMIZE FOR LOAD TRUE ; # default
+CONFIGURE ARCHIVELOG DELETION POLICY TO NONE; # default
+CONFIGURE SNAPSHOT CONTROLFILE NAME TO '/u01/app/oracle/product/11.2.0/db_1/dbs/snapcf_orcl.f'; # default
+
+RMAN> CONFIGURE RETENTION POLICY TO REDUNDANCY 2;
+
+new RMAN configuration parameters:
+CONFIGURE RETENTION POLICY TO REDUNDANCY 2;
+new RMAN configuration parameters are successfully stored
+
+RMAN> show all;
+
+RMAN configuration parameters for database with db_unique_name ORCL are:
+CONFIGURE RETENTION POLICY TO REDUNDANCY 2;
+CONFIGURE BACKUP OPTIMIZATION OFF; # default
+CONFIGURE DEFAULT DEVICE TYPE TO DISK; # default
+CONFIGURE CONTROLFILE AUTOBACKUP OFF; # default
+CONFIGURE CONTROLFILE AUTOBACKUP FORMAT FOR DEVICE TYPE DISK TO '%F'; # default
+CONFIGURE DEVICE TYPE DISK PARALLELISM 1 BACKUP TYPE TO BACKUPSET; # default
+CONFIGURE DATAFILE BACKUP COPIES FOR DEVICE TYPE DISK TO 1; # default
+CONFIGURE ARCHIVELOG BACKUP COPIES FOR DEVICE TYPE DISK TO 1; # default
+CONFIGURE MAXSETSIZE TO UNLIMITED; # default
+CONFIGURE ENCRYPTION FOR DATABASE OFF; # default
+CONFIGURE ENCRYPTION ALGORITHM 'AES128'; # default
+CONFIGURE COMPRESSION ALGORITHM 'BASIC' AS OF RELEASE 'DEFAULT' OPTIMIZE FOR LOAD TRUE ; # default
+CONFIGURE ARCHIVELOG DELETION POLICY TO NONE; # default
+CONFIGURE SNAPSHOT CONTROLFILE NAME TO '/u01/app/oracle/product/11.2.0/db_1/dbs/snapcf_orcl.f'; # default
+
+RMAN> backup database;
+
+RMAN> report obsolete;
+
+RMAN retention policy will be applied to the command
+RMAN retention policy is set to redundancy 2
+no obsolete backups found
+RMAN> backup database;
+
+Starting backup at 06-OCT-17
+using channel ORA_DISK_1
+channel ORA_DISK_1: starting full datafile backup set
+channel ORA_DISK_1: specifying datafile(s) in backup set
+input datafile file number=00001 name=/u01/app/oracle/oradata/orcl/system01.dbf
+input datafile file number=00002 name=/u01/app/oracle/oradata/orcl/sysaux01.dbf
+input datafile file number=00005 name=/u01/app/oracle/oradata/orcl/example01.dbf
+input datafile file number=00003 name=/u01/app/oracle/oradata/orcl/undotbs01.dbf
+input datafile file number=00004 name=/u01/app/oracle/oradata/orcl/users01.dbf
+channel ORA_DISK_1: starting piece 1 at 06-OCT-17
+channel ORA_DISK_1: finished piece 1 at 06-OCT-17
+piece handle=/u01/app/oracle/fast_recovery_area/ORCL/backupset/2017_10_06/o1_mf_nnndf_TAG20171006T123359_dxg8yr2n_.bkp tag=TAG20171006T123359 comment=NONE
+channel ORA_DISK_1: backup set complete, elapsed time: 00:00:55
+channel ORA_DISK_1: starting full datafile backup set
+channel ORA_DISK_1: specifying datafile(s) in backup set
+including current control file in backup set
+including current SPFILE in backup set
+channel ORA_DISK_1: starting piece 1 at 06-OCT-17
+channel ORA_DISK_1: finished piece 1 at 06-OCT-17
+piece handle=/u01/app/oracle/fast_recovery_area/ORCL/backupset/2017_10_06/o1_mf_ncsnf_TAG20171006T123359_dxg90j92_.bkp tag=TAG20171006T123359 comment=NONE
+channel ORA_DISK_1: backup set complete, elapsed time: 00:00:01
+Finished backup at 06-OCT-17
+
+RMAN> report obsolete;
+
+RMAN retention policy will be applied to the command
+RMAN retention policy is set to redundancy 2
+Report of obsolete backups and copies
+Type                 Key    Completion Time    Filename/Handle
+-------------------- ------ ------------------ --------------------
+Backup Set           5      06-OCT-17         
+  Backup Piece       5      06-OCT-17          /u01/app/oracle/fast_recovery_area/ORCL/backupset/2017_10_06/o1_mf_nnndf_TAG20171006T123114_dxg8slsc_.bkp
+Backup Set           6      06-OCT-17         
+  Backup Piece       6      06-OCT-17          /u01/app/oracle/fast_recovery_area/ORCL/backupset/2017_10_06/o1_mf_ncsnf_TAG20171006T123114_dxg8vc00_.bkp
+
+RMAN> 
+
+
+RMAN> report obsolete;
+
+RMAN retention policy will be applied to the command
+RMAN retention policy is set to redundancy 2
+Report of obsolete backups and copies
+Type                 Key    Completion Time    Filename/Handle
+-------------------- ------ ------------------ --------------------
+Backup Set           5      06-OCT-17         
+  Backup Piece       5      06-OCT-17          /u01/app/oracle/fast_recovery_area/ORCL/backupset/2017_10_06/o1_mf_nnndf_TAG20171006T123114_dxg8slsc_.bkp
+Backup Set           6      06-OCT-17         
+  Backup Piece       6      06-OCT-17          /u01/app/oracle/fast_recovery_area/ORCL/backupset/2017_10_06/o1_mf_ncsnf_TAG20171006T123114_dxg8vc00_.bkp
+
+RMAN> delete obsolete;
+
+RMAN retention policy will be applied to the command
+RMAN retention policy is set to redundancy 2
+using channel ORA_DISK_1
+Deleting the following obsolete backups and copies:
+Type                 Key    Completion Time    Filename/Handle
+-------------------- ------ ------------------ --------------------
+Backup Set           5      06-OCT-17         
+  Backup Piece       5      06-OCT-17          /u01/app/oracle/fast_recovery_area/ORCL/backupset/2017_10_06/o1_mf_nnndf_TAG20171006T123114_dxg8slsc_.bkp
+Backup Set           6      06-OCT-17         
+  Backup Piece       6      06-OCT-17          /u01/app/oracle/fast_recovery_area/ORCL/backupset/2017_10_06/o1_mf_ncsnf_TAG20171006T123114_dxg8vc00_.bkp
+
+Do you really want to delete the above objects (enter YES or NO)? YES
+deleted backup piece
+backup piece handle=/u01/app/oracle/fast_recovery_area/ORCL/backupset/2017_10_06/o1_mf_nnndf_TAG20171006T123114_dxg8slsc_.bkp RECID=5 STAMP=956665874
+deleted backup piece
+backup piece handle=/u01/app/oracle/fast_recovery_area/ORCL/backupset/2017_10_06/o1_mf_ncsnf_TAG20171006T123114_dxg8vc00_.bkp RECID=6 STAMP=956665930
+Deleted 2 objects
+
+
+
+RMAN> CONFIGURE RETENTION POLICY TO RECOVERY WINDOW OF 10 DAYS;
+
+old RMAN configuration parameters:
+CONFIGURE RETENTION POLICY TO REDUNDANCY 2;
+new RMAN configuration parameters:
+CONFIGURE RETENTION POLICY TO RECOVERY WINDOW OF 10 DAYS;
+new RMAN configuration parameters are successfully stored
+
+RMAN> show all;
+
+RMAN configuration parameters for database with db_unique_name ORCL are:
+CONFIGURE RETENTION POLICY TO RECOVERY WINDOW OF 10 DAYS;
+CONFIGURE BACKUP OPTIMIZATION OFF; # default
+CONFIGURE DEFAULT DEVICE TYPE TO DISK; # default
+CONFIGURE CONTROLFILE AUTOBACKUP OFF; # default
+CONFIGURE CONTROLFILE AUTOBACKUP FORMAT FOR DEVICE TYPE DISK TO '%F'; # default
+CONFIGURE DEVICE TYPE DISK PARALLELISM 1 BACKUP TYPE TO BACKUPSET; # default
+CONFIGURE DATAFILE BACKUP COPIES FOR DEVICE TYPE DISK TO 1; # default
+CONFIGURE ARCHIVELOG BACKUP COPIES FOR DEVICE TYPE DISK TO 1; # default
+CONFIGURE MAXSETSIZE TO UNLIMITED; # default
+CONFIGURE ENCRYPTION FOR DATABASE OFF; # default
+CONFIGURE ENCRYPTION ALGORITHM 'AES128'; # default
+CONFIGURE COMPRESSION ALGORITHM 'BASIC' AS OF RELEASE 'DEFAULT' OPTIMIZE FOR LOAD TRUE ; # default
+CONFIGURE ARCHIVELOG DELETION POLICY TO NONE; # default
+CONFIGURE SNAPSHOT CONTROLFILE NAME TO '/u01/app/oracle/product/11.2.0/db_1/dbs/snapcf_orcl.f'; # default
+
+
+
+RMAN> CONFIGURE CONTROLFILE AUTOBACKUP ON;
+
+new RMAN configuration parameters:
+CONFIGURE CONTROLFILE AUTOBACKUP ON;
+new RMAN configuration parameters are successfully stored
+
+RMAN> show all;
+
+RMAN configuration parameters for database with db_unique_name ORCL are:
+CONFIGURE RETENTION POLICY TO RECOVERY WINDOW OF 10 DAYS;
+CONFIGURE BACKUP OPTIMIZATION OFF; # default
+CONFIGURE DEFAULT DEVICE TYPE TO DISK; # default
+CONFIGURE CONTROLFILE AUTOBACKUP ON;
+CONFIGURE CONTROLFILE AUTOBACKUP FORMAT FOR DEVICE TYPE DISK TO '%F'; # default
+CONFIGURE DEVICE TYPE DISK PARALLELISM 1 BACKUP TYPE TO BACKUPSET; # default
+CONFIGURE DATAFILE BACKUP COPIES FOR DEVICE TYPE DISK TO 1; # default
+CONFIGURE ARCHIVELOG BACKUP COPIES FOR DEVICE TYPE DISK TO 1; # default
+CONFIGURE MAXSETSIZE TO UNLIMITED; # default
+CONFIGURE ENCRYPTION FOR DATABASE OFF; # default
+CONFIGURE ENCRYPTION ALGORITHM 'AES128'; # default
+CONFIGURE COMPRESSION ALGORITHM 'BASIC' AS OF RELEASE 'DEFAULT' OPTIMIZE FOR LOAD TRUE ; # default
+CONFIGURE ARCHIVELOG DELETION POLICY TO NONE; # default
+CONFIGURE SNAPSHOT CONTROLFILE NAME TO '/u01/app/oracle/product/11.2.0/db_1/dbs/snapcf_orcl.f'; # default
+
+
+RMAN> backup database;
+
+Starting backup at 06-OCT-17
+allocated channel: ORA_DISK_1
+channel ORA_DISK_1: SID=42 device type=DISK
+channel ORA_DISK_1: starting full datafile backup set
+channel ORA_DISK_1: specifying datafile(s) in backup set
+input datafile file number=00001 name=/u01/app/oracle/oradata/orcl/system01.dbf
+input datafile file number=00002 name=/u01/app/oracle/oradata/orcl/sysaux01.dbf
+input datafile file number=00005 name=/u01/app/oracle/oradata/orcl/example01.dbf
+input datafile file number=00003 name=/u01/app/oracle/oradata/orcl/undotbs01.dbf
+input datafile file number=00004 name=/u01/app/oracle/oradata/orcl/users01.dbf
+channel ORA_DISK_1: starting piece 1 at 06-OCT-17
+channel ORA_DISK_1: finished piece 1 at 06-OCT-17
+piece handle=/u01/app/oracle/fast_recovery_area/ORCL/backupset/2017_10_06/o1_mf_nnndf_TAG20171006T124336_dxg9jr9z_.bkp tag=TAG20171006T124336 comment=NONE
+channel ORA_DISK_1: backup set complete, elapsed time: 00:00:55
+Finished backup at 06-OCT-17
+
+Starting Control File and SPFILE Autobackup at 06-OCT-17
+piece handle=/u01/app/oracle/fast_recovery_area/ORCL/autobackup/2017_10_06/o1_mf_s_956666671_dxg9lhp5_.bkp comment=NONE
+Finished Control File and SPFILE Autobackup at 06-OCT-17
+
+RMAN> 
+
+RMAN> report obsolete;
+
+RMAN retention policy will be applied to the command
+RMAN retention policy is set to redundancy 2
+no obsolete backups found
+
+Recovery Manager complete.
+[oracle@dbserver1 ~]$ cd /u01/app/oracle/fast_recovery_area/ORCL
+[oracle@dbserver1 ORCL]$ ls
+archivelog  autobackup  backupset  flashback  onlinelog
+[oracle@dbserver1 ORCL]$ cd autobackup/
+[oracle@dbserver1 autobackup]$ ls
+2017_10_06
+[oracle@dbserver1 autobackup]$ cd 2017_10_06/
+[oracle@dbserver1 2017_10_06]$ ls
+o1_mf_s_956666671_dxg9lhp5_.bkp
+[oracle@dbserver1 2017_10_06]$ 
+
+
+
+
+
+
+
+
+
+

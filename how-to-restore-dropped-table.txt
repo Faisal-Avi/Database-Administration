@@ -1,0 +1,122 @@
+[oracle@dbserver ~]$ sqlplus / as sysdba
+
+SQL*Plus: Release 11.2.0.3.0 Production on Fri Oct 6 11:20:26 2017
+
+Copyright (c) 1982, 2011, Oracle.  All rights reserved.
+
+Connected to an idle instance.
+
+SQL> 
+SQL> starup
+SP2-0042: unknown command "starup" - rest of line ignored.
+SQL> startup
+ORA-01078: failure in processing system parameters
+LRM-00109: could not open parameter file '/u01/app/oracle/product/11.2.0/db_1/dbs/initorcldb.ora'
+SQL> 
+SQL> 
+SQL> exit
+Disconnected
+[oracle@dbserver ~]$ . oraenv
+ORACLE_SID = [orcldb] ? orcl
+The Oracle base remains unchanged with value /u01/app/oracle
+[oracle@dbserver ~]$ 
+[oracle@dbserver ~]$ 
+[oracle@dbserver ~]$ sqlplus / as sysdba
+
+SQL*Plus: Release 11.2.0.3.0 Production on Fri Oct 6 11:20:55 2017
+
+Copyright (c) 1982, 2011, Oracle.  All rights reserved.
+
+
+Connected to:
+Oracle Database 11g Enterprise Edition Release 11.2.0.3.0 - 64bit Production
+With the Partitioning, OLAP, Data Mining and Real Application Testing options
+
+SQL> select open_mode from v$database;
+
+OPEN_MODE
+--------------------
+READ WRITE
+
+SQL> 
+SQL> 
+SQL> create user t identified by t;
+
+User created.
+
+SQL> 
+SQL> 
+SQL> grant dba to t;
+
+Grant succeeded.
+
+SQL> conn t/t
+Connected.
+SQL> 
+SQL> 
+SQL> create table t1 (id number);
+
+Table created.
+
+SQL> insert into t1 values (1);
+
+1 row created.
+
+SQL> 
+SQL> 
+SQL> commit;
+
+Commit complete.
+
+SQL> 
+SQL> 
+SQL> drop table t1;
+
+Table dropped.
+
+SQL> select tname from tab;
+
+TNAME
+------------------------------
+BIN$WtsMtGrADXDgU5YAqMBafw==$0
+
+SQL> 
+SQL> 
+SQL> flashback table t1 before drop;
+flashback table t1 before drop
+                          *
+ERROR at line 1:
+ORA-00905: missing keyword
+
+
+SQL> flashback table t1 to before drop;
+
+Flashback complete.
+
+SQL> 
+SQL> select * from t1;
+
+	ID
+----------
+	 1
+
+SQL> 
+SQL> 
+SQL> drop table t1;
+
+Table dropped.
+
+SQL> 
+SQL> 
+SQL> purge recyclebin;
+
+Recyclebin purged.
+
+SQL> 
+SQL> 
+SQL> select tname from tab;
+
+no rows selected
+
+SQL>   
+

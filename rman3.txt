@@ -1,0 +1,205 @@
+RMAN> show all;
+
+using target database control file instead of recovery catalog
+RMAN configuration parameters for database with db_unique_name ORCL are:
+CONFIGURE RETENTION POLICY TO REDUNDANCY 1; # default
+CONFIGURE BACKUP OPTIMIZATION OFF; # default
+CONFIGURE DEFAULT DEVICE TYPE TO DISK; # default
+CONFIGURE CONTROLFILE AUTOBACKUP OFF; # default
+CONFIGURE CONTROLFILE AUTOBACKUP FORMAT FOR DEVICE TYPE DISK TO '%F'; # default
+CONFIGURE DEVICE TYPE DISK PARALLELISM 1 BACKUP TYPE TO BACKUPSET; # default
+CONFIGURE DATAFILE BACKUP COPIES FOR DEVICE TYPE DISK TO 1; # default
+CONFIGURE ARCHIVELOG BACKUP COPIES FOR DEVICE TYPE DISK TO 1; # default
+CONFIGURE MAXSETSIZE TO UNLIMITED; # default
+CONFIGURE ENCRYPTION FOR DATABASE OFF; # default
+CONFIGURE ENCRYPTION ALGORITHM 'AES128'; # default
+CONFIGURE COMPRESSION ALGORITHM 'BASIC' AS OF RELEASE 'DEFAULT' OPTIMIZE FOR LOAD TRUE ; # default
+CONFIGURE ARCHIVELOG DELETION POLICY TO NONE; # default
+CONFIGURE SNAPSHOT CONTROLFILE NAME TO '/u01/app/oracle/product/11.2.0/db_1/dbs/snapcf_orcl.f'; # default
+
+RMAN> CONFIGURE CONTROLFILE AUTOBACKUP ON;
+
+new RMAN configuration parameters:
+CONFIGURE CONTROLFILE AUTOBACKUP ON;
+new RMAN configuration parameters are successfully stored
+
+
+SQL> select log_mode from v$database;
+
+LOG_MODE
+------------
+ARCHIVELOG
+
+
+RMAN> backup database plus archivelog;
+
+
+SQL> shu immediate
+Database closed.
+Database dismounted.
+ORACLE instance shut down.
+SQL> 
+
+
+[oracle@dbserver1 Desktop]$ cd /u01/app/oracle/oradata/orcl/
+[oracle@dbserver1 orcl]$ ls
+control01.ctl  example01.dbf  redo01.log  redo02.log  redo03.log  sysaux01.dbf  system01.dbf  temp01.dbf  undotbs01.dbf  users01.dbf
+[oracle@dbserver1 orcl]$ rm -rf control01.ctl 
+[oracle@dbserver1 orcl]$ rm -rf *.dbf
+[oracle@dbserver1 orcl]$ cd /u01/app/oracle/fast_recovery_area/orcl/
+[oracle@dbserver1 orcl]$ rm -rf control02.ctl 
+[oracle@dbserver1 orcl]$ 
+
+[oracle@dbserver1 orcl]$ cd /u01/app/oracle/product/11.2.0/db_1/dbs/
+[oracle@dbserver1 dbs]$ ls
+hc_AgDq.dat  hc_orcl.dat  lkAGDQ_TSPITR_ORCL  lkORCL  orapworcl  snapcf_orcl.f  spfileorcl.ora
+[oracle@dbserver1 dbs]$ rm -rf spfileorcl.ora 
+
+
+[oracle@dbserver1 dbs]$ sqlplus / as sysdba
+
+SQL*Plus: Release 11.2.0.3.0 Production on Fri Oct 27 10:55:04 2017
+
+Copyright (c) 1982, 2011, Oracle.  All rights reserved.
+RMAN> startup nomount
+
+startup failed: ORA-01078: failure in processing system parameters
+LRM-00109: could not open parameter file '/u01/app/oracle/product/11.2.0/db_1/dbs/initorcl.ora'
+
+starting Oracle instance without parameter file for retrieval of spfile
+Oracle instance started
+
+Total System Global Area     158662656 bytes
+
+Fixed Size                     2226456 bytes
+Variable Size                 92276456 bytes
+Database Buffers              58720256 bytes
+Redo Buffers                   5439488 bytes
+
+RMAN> 
+
+Connected to an idle instance.
+
+SQL> startup
+ORA-01078: failure in processing system parameters
+LRM-00109: could not open parameter file '/u01/app/oracle/product/11.2.0/db_1/dbs/initorcl.ora'
+SQL> 
+
+RMAN> startup nomount
+
+startup failed: ORA-01078: failure in processing system parameters
+LRM-00109: could not open parameter file '/u01/app/oracle/product/11.2.0/db_1/dbs/initorcl.ora'
+
+starting Oracle instance without parameter file for retrieval of spfile
+Oracle instance started
+
+Total System Global Area     158662656 bytes
+
+Fixed Size                     2226456 bytes
+Variable Size                 92276456 bytes
+Database Buffers              58720256 bytes
+Redo Buffers                   5439488 bytes
+
+RMAN> 
+
+oracle@dbserver1 dbs]$ cd /u01/app/oracle/fast_recovery_area/ORCL/autobackup/2017_10_27/
+[oracle@dbserver1 2017_10_27]$ ls
+o1_mf_s_958474170_dz5gpv85_.bkp
+[oracle@dbserver1 2017_10_27]$ pwd
+/u01/app/oracle/fast_recovery_area/ORCL/autobackup/2017_10_27
+[oracle@dbserver1 2017_10_27]$ ls
+o1_mf_s_958474170_dz5gpv85_.bkp
+[oracle@dbserver1 2017_10_27]$ 
+
+
+RMAN> restore spfile from '/u01/app/oracle/fast_recovery_area/ORCL/autobackup/2017_10_27/o1_mf_s_958474170_dz5gpv85_.bkp';
+
+Starting restore at 27-OCT-17
+using channel ORA_DISK_1
+
+channel ORA_DISK_1: restoring spfile from AUTOBACKUP /u01/app/oracle/fast_recovery_area/ORCL/autobackup/2017_10_27/o1_mf_s_958474170_dz5gpv85_.bkp
+channel ORA_DISK_1: SPFILE restore from AUTOBACKUP complete
+Finished restore at 27-OCT-17
+
+RMAN> 
+
+
+[oracle@dbserver1 2017_10_27]$ sqlplus / as sysdba
+
+SQL*Plus: Release 11.2.0.3.0 Production on Fri Oct 27 11:00:49 2017
+
+Copyright (c) 1982, 2011, Oracle.  All rights reserved.
+
+
+Connected to:
+Oracle Database 11g Enterprise Edition Release 11.2.0.3.0 - 64bit Production
+With the Partitioning, OLAP, Data Mining and Real Application Testing options
+
+SQL> shu immediate
+ORA-01507: database not mounted
+
+
+ORACLE instance shut down.
+SQL> startup nomount
+ORACLE instance started.
+
+Total System Global Area  830930944 bytes
+Fixed Size		    2232920 bytes
+Variable Size		  494931368 bytes
+Database Buffers	  331350016 bytes
+Redo Buffers		    2416640 bytes
+SQL> 
+
+
+RMAN> restore controlfile from autobackup;
+
+Starting restore at 27-OCT-17
+using target database control file instead of recovery catalog
+allocated channel: ORA_DISK_1
+channel ORA_DISK_1: SID=20 device type=DISK
+
+recovery area destination: /u01/app/oracle/fast_recovery_area
+database name (or database unique name) used for search: ORCL
+channel ORA_DISK_1: AUTOBACKUP /u01/app/oracle/fast_recovery_area/ORCL/autobackup/2017_10_27/o1_mf_s_958474170_dz5gpv85_.bkp found in the recovery area
+AUTOBACKUP search with format "%F" not attempted because DBID was not set
+channel ORA_DISK_1: restoring control file from AUTOBACKUP /u01/app/oracle/fast_recovery_area/ORCL/autobackup/2017_10_27/o1_mf_s_958474170_dz5gpv85_.bkp
+channel ORA_DISK_1: control file restore from AUTOBACKUP complete
+output file name=/u01/app/oracle/oradata/orcl/control01.ctl
+output file name=/u01/app/oracle/fast_recovery_area/orcl/control02.ctl
+Finished restore at 27-OCT-17
+
+RMAN> 
+
+
+
+
+RMAN> alter database mount;
+
+database mounted
+released channel: ORA_DISK_1
+
+RMAN> 
+
+RMAN> restore database;
+
+RMAN> recover database;
+
+
+RMAN> alter database open;
+
+RMAN-00571: ===========================================================
+RMAN-00569: =============== ERROR MESSAGE STACK FOLLOWS ===============
+RMAN-00571: ===========================================================
+RMAN-03002: failure of alter db command at 10/27/2017 11:11:44
+ORA-01589: must use RESETLOGS or NORESETLOGS option for database open
+
+RMAN> alter database open resetlogs;
+
+database opened
+
+RMAN> 
+
+
+
+
+
